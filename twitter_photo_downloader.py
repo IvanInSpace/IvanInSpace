@@ -30,8 +30,12 @@ except ImportError:
     TQDM_AVAILABLE = False
 
 
-def get_client() -> tweepy.Client:
-    """Create a Tweepy client using credentials from environment variables."""
+def get_client() -> tuple["tweepy.Client", bool]:
+    """
+    Create a Tweepy client using credentials from environment variables.
+    Returns (client, has_user_auth) where has_user_auth indicates OAuth 1.0a
+    tokens are available (required for accessing protected/private accounts).
+    """
     bearer_token = os.getenv("TWITTER_BEARER_TOKEN")
     api_key = os.getenv("TWITTER_API_KEY")
     api_secret = os.getenv("TWITTER_API_SECRET")
@@ -45,14 +49,23 @@ def get_client() -> tweepy.Client:
             "Get them at: https://developer.twitter.com/en/portal/dashboard"
         )
 
-    return tweepy.Client(
+    has_user_auth = all([api_key, api_secret, access_token, access_token_secret])
+
+    if not has_user_auth:
+        print(
+            "Notice: OAuth tokens not set — only public accounts are accessible.\n"
+            "To download from protected accounts, add all 4 OAuth fields to .env.\n"
+        )
+
+    client = tweepy.Client(
         bearer_token=bearer_token,
-        consumer_key=api_key,
-        consumer_secret=api_secret,
-        access_token=access_token,
-        access_token_secret=access_token_secret,
+        consumer_key=api_key or None,
+        consumer_secret=api_secret or None,
+        access_token=access_token or None,
+        access_token_secret=access_token_secret or None,
         wait_on_rate_limit=True,
     )
+    return client, has_user_auth
 
 
 def get_user_id(client: tweepy.Client, username: str) -> tuple[str, str]:
@@ -69,7 +82,7 @@ def get_user_id(client: tweepy.Client, username: str) -> tuple[str, str]:
     return str(response.data.id), response.data.name
 
 
-def fetch_media_urls(client: tweepy.Client, user_id: str, limit: int | None) -> list[dict]:
+def fetch_media_urls(client: tweepy.Client, user_id: str, limit: int | None, user_auth: bool = False) -> list[dict]:
     """
     Fetch all tweet media URLs for a user.
     Returns list of dicts: {url, tweet_id, created_at}
@@ -97,7 +110,18 @@ def fetch_media_urls(client: tweepy.Client, user_id: str, limit: int | None) -> 
                 media_fields=["url", "preview_image_url", "type", "width", "height"],
                 tweet_fields=["created_at", "attachments"],
                 pagination_token=pagination_token,
+                # user_auth=True is required to access protected/private accounts.
+                # It tells tweepy to sign the request with OAuth 1.0a (your account),
+                # so Twitter sees you as a logged-in follower of that account.
+                user_auth=user_auth,
             )
+        except tweepy.errors.Forbidden as e:
+            print(
+                f"\nAccess denied (403). The account may be protected.\n"
+                f"Make sure all 4 OAuth fields are set in .env and you follow this account.\n"
+                f"Details: {e}"
+            )
+            break
         except tweepy.TweepyException as e:
             print(f"\nAPI error: {e}")
             break
@@ -167,7 +191,10 @@ def download_all(
     limit: int | None,
     skip_existing: bool,
 ) -> None:
-    client = get_client()
+    client, has_user_auth = get_client()
+
+    auth_mode = "OAuth 1.0a (user context) — protected accounts supported" if has_user_auth else "Bearer Token (app-only) — public accounts only"
+    print(f"Auth mode: {auth_mode}")
 
     print(f"Looking up @{username}...")
     user_id, display_name = get_user_id(client, username)
@@ -178,7 +205,7 @@ def download_all(
     print(f"User: {display_name} (@{username})  ID: {user_id}")
     print(f"Output directory: {user_dir.resolve()}")
 
-    media_items = fetch_media_urls(client, user_id, limit)
+    media_items = fetch_media_urls(client, user_id, limit, user_auth=has_user_auth)
 
     if not media_items:
         print("No photos found.")
