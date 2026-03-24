@@ -58,24 +58,26 @@ function renderImages(images) {
     card.dataset.hqUrl = img.hqUrl;
 
     const isHq = img.hqUrl !== img.thumbUrl;
+    const sizeLabel = formatSize(img.width, img.height);
 
     card.innerHTML = `
-      ${isHq ? '<span class="hq-badge">HQ</span>' : ''}
-      <img src="${img.thumbUrl}" loading="lazy" alt="${img.alt}" onerror="this.src='data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 1 1%22/>'"/>
-      <div class="img-info">${formatSize(img.width, img.height)}</div>
-      <div class="overlay">
-        <button class="dl-btn">↓ Download</button>
-        <button class="open-btn">Open HQ</button>
+      <div class="img-thumb">
+        <img src="${img.thumbUrl}" loading="lazy" alt="${img.alt}"
+          onerror="this.style.opacity='0.2'"/>
+        ${isHq ? '<span class="hq-badge">HQ</span>' : ''}
+        ${sizeLabel ? `<span class="img-size">${sizeLabel}</span>` : ''}
+      </div>
+      <div class="img-actions">
+        <button class="dl-btn">⬇ Download</button>
+        <button class="open-btn">Open</button>
       </div>
     `;
 
-    card.querySelector('.dl-btn').addEventListener('click', e => {
-      e.stopPropagation();
+    card.querySelector('.dl-btn').addEventListener('click', () => {
       downloadImage(img.hqUrl, card);
     });
 
-    card.querySelector('.open-btn').addEventListener('click', e => {
-      e.stopPropagation();
+    card.querySelector('.open-btn').addEventListener('click', () => {
       chrome.tabs.create({ url: img.hqUrl, active: false });
     });
 
