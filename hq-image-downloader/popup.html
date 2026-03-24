@@ -64,6 +64,8 @@
     .btn:hover { background: #2a2a2a; color: #fff; }
     .btn-primary { background: #2563eb; border-color: #2563eb; color: #fff; }
     .btn-primary:hover { background: #1d4ed8; }
+    .btn-toggle { background: #222; border: 1px solid #333; color: #888; }
+    .btn-toggle.active { background: #1a3a1a; border-color: #22c55e; color: #22c55e; }
 
     #grid {
       display: grid;
@@ -201,6 +203,7 @@
   </header>
   <div id="controls">
     <input id="search" type="text" placeholder="Filter images..." />
+    <button class="btn btn-toggle" id="hq-only-btn">HQ only</button>
     <button class="btn btn-primary" id="refresh-btn">Refresh</button>
     <button class="btn" id="download-all-btn">Download all</button>
   </div>

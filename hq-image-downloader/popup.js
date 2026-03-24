@@ -1,4 +1,5 @@
 let allImages = [];
+let hqOnly = false;
 
 function filenameFromUrl(url) {
   try {
@@ -118,15 +119,29 @@ function loadImages() {
   });
 }
 
-// Search/filter
-document.getElementById('search').addEventListener('input', e => {
-  const query = e.target.value.toLowerCase();
-  const filtered = allImages.filter(img =>
-    img.hqUrl.toLowerCase().includes(query) ||
-    img.alt.toLowerCase().includes(query)
+function isHqImage(img) {
+  return img.hqUrl !== img.thumbUrl || (img.width >= 800) || (img.height >= 800);
+}
+
+function applyFilters() {
+  const query = document.getElementById('search').value.toLowerCase();
+  let filtered = allImages;
+  if (hqOnly) filtered = filtered.filter(isHqImage);
+  if (query) filtered = filtered.filter(img =>
+    img.hqUrl.toLowerCase().includes(query) || img.alt.toLowerCase().includes(query)
   );
   renderImages(filtered);
+}
+
+// HQ only toggle
+document.getElementById('hq-only-btn').addEventListener('click', e => {
+  hqOnly = !hqOnly;
+  e.currentTarget.classList.toggle('active', hqOnly);
+  applyFilters();
 });
+
+// Search/filter
+document.getElementById('search').addEventListener('input', applyFilters);
 
 // Refresh
 document.getElementById('refresh-btn').addEventListener('click', loadImages);
