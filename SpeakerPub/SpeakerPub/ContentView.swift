@@ -1,31 +1,33 @@
 import SwiftUI
 
-// MARK: - Main Tab View — Minimal Dark Tab Bar
+// MARK: - Main Container
 
 struct ContentView: View {
     @State private var selectedTab = 0
 
     var body: some View {
         ZStack(alignment: .bottom) {
-            // Content
+            // Content — full screen
             Group {
                 switch selectedTab {
-                case 0: HomeView()
+                case 0: HomeView(selectedTab: $selectedTab)
                 case 1: BarMenuView()
                 case 2: KitchenMenuView()
                 case 3: AboutView()
-                default: HomeView()
+                default: HomeView(selectedTab: $selectedTab)
                 }
             }
-            .ignoresSafeArea(.all, edges: .bottom)
 
-            // Custom minimal tab bar
-            tabBar
+            // Tab bar only on non-home screens
+            if selectedTab != 0 {
+                tabBar
+            }
         }
+        .ignoresSafeArea(.keyboard)
         .preferredColorScheme(.dark)
     }
 
-    // MARK: - Tab Bar
+    // MARK: - Tab Bar (for Bar, Kitchen, About)
 
     private var tabBar: some View {
         HStack(spacing: 0) {
@@ -34,10 +36,11 @@ struct ContentView: View {
             tabItem(icon: "fork.knife", label: "Кухня", index: 2)
             tabItem(icon: "info.circle", label: "О нас", index: 3)
         }
-        .padding(.top, 8)
-        .padding(.bottom, 28)
+        .padding(.top, 10)
+        .padding(.bottom, 2)
         .background(
             Color.spDark
+                .ignoresSafeArea(.all, edges: .bottom)
                 .overlay(
                     Rectangle()
                         .fill(Color.spDivider)

@@ -19,7 +19,7 @@ struct AboutView: View {
                         contactsSection
                         mapSection
                     }
-                    .padding(.bottom, 80)
+                    .padding(.bottom, 90)
                 }
                 .background(Color.spDark)
 

@@ -100,7 +100,7 @@ struct DrinksCategoryListView: View {
                 }
             }
             .padding(.vertical, SP.spacing16)
-            .padding(.bottom, 60)
+            .padding(.bottom, 90)
         }
         .background(Color.spDark)
         .navigationTitle(title)

@@ -26,7 +26,7 @@ struct KitchenMenuView: View {
                         CategoryBlock(category: category)
                     }
                 }
-                .padding(.bottom, 80)
+                .padding(.bottom, 90)
             }
             .background(
                 Image("kitchen")
