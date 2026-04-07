@@ -290,7 +290,7 @@ struct AboutView: View {
                 span: MKCoordinateSpan(latitudeDelta: 0.005, longitudeDelta: 0.005)
             ))) {
                 Marker(info.name, coordinate: info.coordinate)
-                    .tint(.spAccent)
+                    .tint(Color.speakerGreen)
             }
             .frame(height: 200)
             .clipShape(RoundedRectangle(cornerRadius: SP.cardRadius))

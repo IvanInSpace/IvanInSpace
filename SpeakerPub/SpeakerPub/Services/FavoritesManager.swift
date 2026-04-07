@@ -3,6 +3,7 @@ import SwiftUI
 // MARK: - Favorites Manager
 // Persists favorite items using UserDefaults.
 
+@MainActor
 @Observable
 final class FavoritesManager {
     static let shared = FavoritesManager()
