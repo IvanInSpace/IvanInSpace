@@ -12,6 +12,7 @@ struct AboutView: View {
                 VStack(spacing: SP.spacing24) {
                     headerSection
                     aboutSection
+                    eventsSection
                     featuresSection
                     hoursSection
                     contactSection
@@ -81,6 +82,49 @@ struct AboutView: View {
                 .lineSpacing(4)
         }
         .padding(.horizontal, SP.horizontalPadding)
+    }
+
+    // MARK: - Events
+
+    private var eventsSection: some View {
+        VStack(alignment: .leading, spacing: SP.spacing12) {
+            Text("События")
+                .font(.spSectionHeader)
+                .foregroundColor(.spPrimaryText)
+                .padding(.horizontal, SP.horizontalPadding)
+
+            VStack(spacing: 0) {
+                ForEach(Array(info.events.enumerated()), id: \.element.id) { index, event in
+                    HStack(spacing: SP.spacing12) {
+                        Image(systemName: event.icon)
+                            .font(.system(size: 24))
+                            .foregroundColor(.spAccent)
+                            .frame(width: 32)
+
+                        VStack(alignment: .leading, spacing: SP.spacing4) {
+                            Text(event.title)
+                                .font(.spBodyBold)
+                                .foregroundColor(.spPrimaryText)
+                            Text(event.day)
+                                .font(.spSmall)
+                                .foregroundColor(.spAccent)
+                            Text(event.description)
+                                .font(.spCaption)
+                                .foregroundColor(.spSecondaryText)
+                        }
+                    }
+                    .padding(.vertical, SP.spacing12)
+                    .padding(.horizontal, SP.spacing16)
+
+                    if index < info.events.count - 1 {
+                        Divider().padding(.leading, 56)
+                    }
+                }
+            }
+            .background(Color.spCardBackground)
+            .clipShape(RoundedRectangle(cornerRadius: SP.cardRadius))
+            .padding(.horizontal, SP.horizontalPadding)
+        }
     }
 
     // MARK: - Features
@@ -164,11 +208,26 @@ struct AboutView: View {
 
                 Divider().padding(.leading, 56)
 
+                // Metro
+                contactRow(icon: "tram.fill", title: "Метро", value: info.metro)
+
+                Divider().padding(.leading, 56)
+
                 // Phone
                 Button {
                     UIApplication.shared.open(info.phoneURL)
                 } label: {
                     contactRow(icon: "phone.circle.fill", title: "Телефон", value: info.phone, isLink: true)
+                }
+                .buttonStyle(.plain)
+
+                Divider().padding(.leading, 56)
+
+                // Telegram
+                Button {
+                    UIApplication.shared.open(info.telegram)
+                } label: {
+                    contactRow(icon: "paperplane.circle.fill", title: "Telegram", value: info.telegramHandle, isLink: true)
                 }
                 .buttonStyle(.plain)
 

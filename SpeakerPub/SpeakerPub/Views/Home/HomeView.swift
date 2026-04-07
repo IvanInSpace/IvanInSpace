@@ -40,6 +40,7 @@ struct HomeView: View {
         VStack(spacing: 0) {
             heroSection
             quickLinksSection
+            eventsSection
             popularSection
             favoritesSection
         }
@@ -70,6 +71,11 @@ struct HomeView: View {
                 .font(.system(size: 42, weight: .bold, design: .serif))
                 .italic()
                 .foregroundColor(.spAccentDark)
+
+            Text("Английский паб в Москве")
+                .font(.spCaption)
+                .foregroundColor(.spSecondaryText)
+                .padding(.top, SP.spacing2)
 
             // Decorative bottom ornament
             HStack(spacing: SP.spacing8) {
@@ -130,6 +136,30 @@ struct HomeView: View {
         }
         .padding(.horizontal, SP.horizontalPadding)
         .padding(.vertical, SP.spacing24)
+    }
+
+    // MARK: - Events
+
+    private var eventsSection: some View {
+        let events = BarInfo.shared.events
+        return Group {
+            if !events.isEmpty {
+                VStack(spacing: SP.spacing16) {
+                    sectionHeader("События")
+                        .padding(.horizontal, SP.horizontalPadding)
+
+                    ScrollView(.horizontal, showsIndicators: false) {
+                        LazyHStack(spacing: SP.spacing12) {
+                            ForEach(events) { event in
+                                EventCard(event: event)
+                            }
+                        }
+                        .padding(.horizontal, SP.horizontalPadding)
+                    }
+                }
+                .padding(.vertical, SP.spacing24)
+            }
+        }
     }
 
     // MARK: - Popular Items
@@ -339,6 +369,45 @@ struct PopularItemCard: View {
         if item.tags.contains(.caskAle) { return "mug" }
         if item.tags.contains(.houseFavorite) { return "star.fill" }
         return "cup.and.saucer"
+    }
+}
+
+// MARK: - Event Card
+
+struct EventCard: View {
+    let event: BarEvent
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: SP.spacing8) {
+            Image(systemName: event.icon)
+                .font(.system(size: 24))
+                .foregroundColor(.spAccent)
+
+            Text(event.title)
+                .font(.spBodyBold)
+                .foregroundColor(.spPrimaryText)
+
+            Text(event.day)
+                .font(.spSmall)
+                .foregroundColor(.spAccent)
+                .padding(.horizontal, SP.spacing8)
+                .padding(.vertical, SP.spacing4)
+                .background(Color.spAccent.opacity(0.1))
+                .clipShape(Capsule())
+
+            Text(event.description)
+                .font(.spCaption)
+                .foregroundColor(.spSecondaryText)
+                .lineLimit(3)
+        }
+        .frame(width: 200, alignment: .leading)
+        .padding(SP.spacing16)
+        .background(Color.spCardBackground)
+        .clipShape(RoundedRectangle(cornerRadius: SP.cardRadius))
+        .overlay(
+            RoundedRectangle(cornerRadius: SP.cardRadius)
+                .stroke(Color.spDivider, lineWidth: 1)
+        )
     }
 }
 
