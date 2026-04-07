@@ -9,31 +9,43 @@ struct MenuItemDetailView: View {
     var body: some View {
         ScrollView {
             VStack(spacing: 0) {
-                // Hero area
-                heroSection
+                // Name
+                VStack(spacing: SP.spacing8) {
+                    Text(item.name)
+                        .font(.spTitle)
+                        .foregroundColor(.spCream)
+                        .multilineTextAlignment(.center)
 
-                // Content
-                VStack(alignment: .leading, spacing: SP.spacing24) {
-                    // Price section
-                    priceSection
-
-                    // Tags
-                    if !item.tags.isEmpty {
-                        tagsSection
-                    }
-
-                    // Description
                     if let desc = item.description {
-                        descriptionSection(desc)
+                        Text(desc)
+                            .font(.spCaption)
+                            .foregroundColor(.spMuted)
                     }
                 }
-                .padding(SP.horizontalPadding)
-                .padding(.top, SP.spacing24)
+                .padding(.top, SP.spacing32)
+                .padding(.horizontal, SP.horizontalPadding)
+
+                // Divider
+                Rectangle()
+                    .fill(Color.spDivider)
+                    .frame(width: 40, height: 1)
+                    .padding(.vertical, SP.spacing24)
+
+                // Prices
+                priceSection
+                    .padding(.horizontal, SP.horizontalPadding)
+
+                // Tags
+                if !item.tags.isEmpty {
+                    tagsSection
+                        .padding(.top, SP.spacing24)
+                        .padding(.horizontal, SP.horizontalPadding)
+                }
             }
         }
-        .background(Color.spBackground)
-        .navigationTitle(item.name)
+        .background(Color.spDark)
         .navigationBarTitleDisplayMode(.inline)
+        .toolbarColorScheme(.dark, for: .navigationBar)
         .toolbar {
             ToolbarItem(placement: .topBarTrailing) {
                 Button {
@@ -42,80 +54,53 @@ struct MenuItemDetailView: View {
                     }
                 } label: {
                     Image(systemName: favorites.isFavorite(item) ? "heart.fill" : "heart")
-                        .foregroundColor(favorites.isFavorite(item) ? .red : .spSecondaryText)
-                        .symbolEffect(.bounce, value: favorites.isFavorite(item))
+                        .foregroundColor(favorites.isFavorite(item) ? .spGold : .spMuted)
                 }
             }
-        }
-    }
-
-    // MARK: - Hero
-
-    private var heroSection: some View {
-        ZStack {
-            LinearGradient(
-                colors: [Color.spAccent.opacity(0.08), Color.spBackground],
-                startPoint: .top,
-                endPoint: .bottom
-            )
-
-            VStack(spacing: SP.spacing16) {
-                Image(systemName: categoryIcon)
-                    .font(.system(size: 56))
-                    .foregroundColor(.spAccent.opacity(0.4))
-
-                Text(item.name)
-                    .font(.spTitle)
-                    .foregroundColor(.spPrimaryText)
-                    .multilineTextAlignment(.center)
-            }
-            .padding(.vertical, SP.spacing40)
         }
     }
 
     // MARK: - Price
 
     private var priceSection: some View {
-        VStack(alignment: .leading, spacing: SP.spacing12) {
+        VStack(spacing: SP.spacing8) {
             if item.prices.isEmpty {
                 Text("Цена по запросу")
                     .font(.spBody)
-                    .foregroundColor(.spSecondaryText)
+                    .foregroundColor(.spMuted)
                     .italic()
             } else if item.prices.count == 1 {
-                HStack(alignment: .firstTextBaseline) {
+                HStack(alignment: .firstTextBaseline, spacing: SP.spacing4) {
                     Text("\(item.prices[0].amount)")
-                        .font(.system(size: 36, weight: .bold, design: .serif))
-                        .foregroundColor(.spPrice)
+                        .font(.system(size: 32, weight: .light, design: .default))
+                        .foregroundColor(.spGold)
                     Text("₽")
-                        .font(.system(size: 22, weight: .medium, design: .serif))
-                        .foregroundColor(.spPrice)
+                        .font(.system(size: 18, weight: .light))
+                        .foregroundColor(.spGold)
 
                     if let label = item.prices[0].label {
                         Text("/ \(label)")
                             .font(.spCaption)
-                            .foregroundColor(.spSecondaryText)
+                            .foregroundColor(.spMuted)
                     }
                 }
             } else {
-                VStack(spacing: SP.spacing8) {
-                    ForEach(item.prices) { price in
-                        HStack {
-                            if let label = price.label {
-                                Text(label)
-                                    .font(.spBody)
-                                    .foregroundColor(.spSecondaryText)
-                            }
-                            Spacer()
-                            Text("\(price.amount) ₽")
-                                .font(.spPrice)
-                                .foregroundColor(.spPrice)
+                ForEach(item.prices) { price in
+                    HStack {
+                        if let label = price.label {
+                            Text(label)
+                                .font(.spBody)
+                                .foregroundColor(.spMuted)
                         }
-                        .padding(.vertical, SP.spacing8)
-                        .padding(.horizontal, SP.spacing16)
-                        .background(Color.spCardBackground)
-                        .clipShape(RoundedRectangle(cornerRadius: SP.radiusSmall))
+                        Spacer()
+                        Text("\(price.amount) ₽")
+                            .font(.spPrice)
+                            .foregroundColor(.spGold)
                     }
+                    .padding(.vertical, SP.spacing8)
+                    .padding(.horizontal, SP.spacing16)
+                    .background(Color.spCard)
+                    .clipShape(RoundedRectangle(cornerRadius: SP.radiusSmall))
                 }
             }
         }
@@ -128,36 +113,13 @@ struct MenuItemDetailView: View {
             ForEach(item.tags, id: \.self) { tag in
                 Text(tag.rawValue)
                     .font(.spSmall)
-                    .foregroundColor(.spAccentDark)
+                    .foregroundColor(.spGold)
                     .padding(.horizontal, SP.spacing12)
                     .padding(.vertical, SP.spacing6)
-                    .background(Color.spAccent.opacity(0.1))
+                    .background(Color.spGold.opacity(0.12))
                     .clipShape(Capsule())
             }
         }
-    }
-
-    // MARK: - Description
-
-    private func descriptionSection(_ text: String) -> some View {
-        VStack(alignment: .leading, spacing: SP.spacing8) {
-            Text("Описание")
-                .font(.spSubsection)
-                .foregroundColor(.spPrimaryText)
-            Text(text)
-                .font(.spBody)
-                .foregroundColor(.spSecondaryText)
-        }
-    }
-
-    // MARK: - Icon
-
-    private var categoryIcon: String {
-        if item.tags.contains(.nonAlcoholic) { return "cup.and.saucer" }
-        if item.tags.contains(.vegetarian) { return "leaf" }
-        if item.tags.contains(.spicy) { return "flame" }
-        if item.tags.contains(.caskAle) { return "mug" }
-        return "fork.knife"
     }
 }
 

@@ -20,8 +20,9 @@
 		A10001011 /* MenuItemRow.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10002011; };
 		A10001012 /* HomeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10002012; };
 		A10001013 /* MenuItemDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10002013; };
-		A10001014 /* MenuSectionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10002014; };
+		A10001014 /* BarMenuView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10002014; };
 		A10001015 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = A10002015; };
+		A10001016 /* KitchenMenuView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10002017; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -38,8 +39,9 @@
 		A10002011 /* MenuItemRow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MenuItemRow.swift; sourceTree = "<group>"; };
 		A10002012 /* HomeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeView.swift; sourceTree = "<group>"; };
 		A10002013 /* MenuItemDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MenuItemDetailView.swift; sourceTree = "<group>"; };
-		A10002014 /* MenuSectionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MenuSectionView.swift; sourceTree = "<group>"; };
+		A10002014 /* BarMenuView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BarMenuView.swift; sourceTree = "<group>"; };
 		A10002015 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		A10002017 /* KitchenMenuView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KitchenMenuView.swift; sourceTree = "<group>"; };
 		A10002016 /* Preview Content */ = {isa = PBXFileReference; lastKnownFileType = folder; path = "Preview Content"; sourceTree = "<group>"; };
 		A10003000 /* SpeakerPub.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = SpeakerPub.app; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
@@ -129,7 +131,8 @@
 			isa = PBXGroup;
 			children = (
 				A10002013 /* MenuItemDetailView.swift */,
-				A10002014 /* MenuSectionView.swift */,
+				A10002014 /* BarMenuView.swift */,
+				A10002017 /* KitchenMenuView.swift */,
 			);
 			path = Menu;
 			sourceTree = "<group>";
@@ -241,7 +244,8 @@
 				A10001011 /* MenuItemRow.swift in Sources */,
 				A10001012 /* HomeView.swift in Sources */,
 				A10001013 /* MenuItemDetailView.swift in Sources */,
-				A10001014 /* MenuSectionView.swift in Sources */,
+				A10001014 /* BarMenuView.swift in Sources */,
+				A10001016 /* KitchenMenuView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

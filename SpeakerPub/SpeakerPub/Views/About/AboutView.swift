@@ -9,267 +9,154 @@ struct AboutView: View {
     var body: some View {
         NavigationStack {
             ScrollView {
-                VStack(spacing: SP.spacing24) {
-                    headerSection
+                VStack(spacing: SP.spacing32) {
                     aboutSection
-                    eventsSection
-                    featuresSection
-                    hoursSection
-                    contactSection
+                    atmosphereSection
+                    contactsSection
                     mapSection
                 }
                 .padding(.bottom, SP.spacing40)
             }
-            .background(Color.spBackground)
+            .background(Color.spDark)
             .navigationTitle("О нас")
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbarColorScheme(.dark, for: .navigationBar)
         }
-    }
-
-    // MARK: - Header
-
-    private var headerSection: some View {
-        VStack(spacing: SP.spacing12) {
-            Spacer().frame(height: SP.spacing8)
-
-            // Ornamental header matching the brand
-            HStack(spacing: SP.spacing8) {
-                ornamentLine
-                Image(systemName: "star.fill")
-                    .font(.system(size: 8))
-                    .foregroundColor(.spAccent)
-                ornamentLine
-            }
-            .padding(.horizontal, SP.spacing40)
-
-            Text("THE SPEAKER PUB")
-                .font(.system(size: 12, weight: .medium))
-                .tracking(5)
-                .foregroundColor(.spSecondaryText)
-
-            Text("Speaker Pub")
-                .font(.system(size: 34, weight: .bold, design: .serif))
-                .foregroundColor(.spAccentDark)
-
-            HStack(spacing: SP.spacing8) {
-                ornamentLine
-                Image(systemName: "star.fill")
-                    .font(.system(size: 8))
-                    .foregroundColor(.spAccent)
-                ornamentLine
-            }
-            .padding(.horizontal, SP.spacing40)
-        }
-        .padding(.vertical, SP.spacing16)
-    }
-
-    private var ornamentLine: some View {
-        Rectangle()
-            .fill(Color.spDivider)
-            .frame(height: 1)
     }
 
     // MARK: - About
 
     private var aboutSection: some View {
-        VStack(alignment: .leading, spacing: SP.spacing12) {
-            Text("О заведении")
-                .font(.spSectionHeader)
-                .foregroundColor(.spPrimaryText)
+        VStack(alignment: .leading, spacing: SP.spacing16) {
+            Text("О ЗАВЕДЕНИИ")
+                .font(.spBrandSmall)
+                .tracking(3)
+                .foregroundColor(.spGold)
 
             Text(info.aboutText)
                 .font(.spBody)
-                .foregroundColor(.spSecondaryText)
-                .lineSpacing(4)
+                .foregroundColor(.spCream.opacity(0.85))
+                .lineSpacing(6)
         }
         .padding(.horizontal, SP.horizontalPadding)
+        .padding(.top, SP.spacing24)
     }
 
-    // MARK: - Events
+    // MARK: - Atmosphere Carousel
 
-    private var eventsSection: some View {
-        VStack(alignment: .leading, spacing: SP.spacing12) {
-            Text("События")
-                .font(.spSectionHeader)
-                .foregroundColor(.spPrimaryText)
+    private var atmosphereSection: some View {
+        VStack(alignment: .leading, spacing: SP.spacing16) {
+            Text("АТМОСФЕРА")
+                .font(.spBrandSmall)
+                .tracking(3)
+                .foregroundColor(.spGold)
                 .padding(.horizontal, SP.horizontalPadding)
 
-            VStack(spacing: 0) {
-                ForEach(Array(info.events.enumerated()), id: \.element.id) { index, event in
-                    HStack(spacing: SP.spacing12) {
-                        Image(systemName: event.icon)
-                            .font(.system(size: 24))
-                            .foregroundColor(.spAccent)
-                            .frame(width: 32)
-
-                        VStack(alignment: .leading, spacing: SP.spacing4) {
-                            Text(event.title)
-                                .font(.spBodyBold)
-                                .foregroundColor(.spPrimaryText)
-                            Text(event.day)
-                                .font(.spSmall)
-                                .foregroundColor(.spAccent)
-                            Text(event.description)
-                                .font(.spCaption)
-                                .foregroundColor(.spSecondaryText)
-                        }
-                    }
-                    .padding(.vertical, SP.spacing12)
-                    .padding(.horizontal, SP.spacing16)
-
-                    if index < info.events.count - 1 {
-                        Divider().padding(.leading, 56)
+            ScrollView(.horizontal, showsIndicators: false) {
+                LazyHStack(spacing: SP.spacing12) {
+                    ForEach(1...5, id: \.self) { index in
+                        Image("atmo\(index)")
+                            .resizable()
+                            .aspectRatio(contentMode: .fill)
+                            .frame(width: 280, height: 200)
+                            .clipShape(RoundedRectangle(cornerRadius: SP.radiusSmall))
                     }
                 }
-            }
-            .background(Color.spCardBackground)
-            .clipShape(RoundedRectangle(cornerRadius: SP.cardRadius))
-            .padding(.horizontal, SP.horizontalPadding)
-        }
-    }
-
-    // MARK: - Features
-
-    private var featuresSection: some View {
-        VStack(alignment: .leading, spacing: SP.spacing12) {
-            Text("Особенности")
-                .font(.spSectionHeader)
-                .foregroundColor(.spPrimaryText)
                 .padding(.horizontal, SP.horizontalPadding)
-
-            LazyVGrid(columns: [
-                GridItem(.flexible(), spacing: SP.spacing12),
-                GridItem(.flexible(), spacing: SP.spacing12)
-            ], spacing: SP.spacing12) {
-                ForEach(info.features, id: \.self) { feature in
-                    HStack(spacing: SP.spacing8) {
-                        Image(systemName: "checkmark.circle.fill")
-                            .font(.system(size: 16))
-                            .foregroundColor(.spAccent)
-                        Text(feature)
-                            .font(.spCaption)
-                            .foregroundColor(.spPrimaryText)
-                        Spacer()
-                    }
-                    .padding(.vertical, SP.spacing8)
-                    .padding(.horizontal, SP.spacing12)
-                    .background(Color.spCardBackground)
-                    .clipShape(RoundedRectangle(cornerRadius: SP.radiusSmall))
-                }
             }
-            .padding(.horizontal, SP.horizontalPadding)
         }
     }
 
-    // MARK: - Hours
+    // MARK: - Contacts (with hours)
 
-    private var hoursSection: some View {
-        VStack(alignment: .leading, spacing: SP.spacing12) {
-            Text("Часы работы")
-                .font(.spSectionHeader)
-                .foregroundColor(.spPrimaryText)
-
-            VStack(spacing: 0) {
-                ForEach(Array(info.workingHours.enumerated()), id: \.offset) { index, schedule in
-                    HStack {
-                        Text(schedule.day)
-                            .font(.spBody)
-                            .foregroundColor(.spPrimaryText)
-                        Spacer()
-                        Text(schedule.hours)
-                            .font(.spBody)
-                            .foregroundColor(.spSecondaryText)
-                    }
-                    .padding(.vertical, SP.spacing12)
-                    .padding(.horizontal, SP.spacing16)
-
-                    if index < info.workingHours.count - 1 {
-                        Divider()
-                            .padding(.leading, SP.spacing16)
-                    }
-                }
-            }
-            .background(Color.spCardBackground)
-            .clipShape(RoundedRectangle(cornerRadius: SP.cardRadius))
-        }
-        .padding(.horizontal, SP.horizontalPadding)
-    }
-
-    // MARK: - Contact
-
-    private var contactSection: some View {
-        VStack(alignment: .leading, spacing: SP.spacing12) {
-            Text("Контакты")
-                .font(.spSectionHeader)
-                .foregroundColor(.spPrimaryText)
+    private var contactsSection: some View {
+        VStack(alignment: .leading, spacing: SP.spacing16) {
+            Text("КОНТАКТЫ")
+                .font(.spBrandSmall)
+                .tracking(3)
+                .foregroundColor(.spGold)
 
             VStack(spacing: 0) {
                 // Address
-                contactRow(icon: "mappin.circle.fill", title: "Адрес", value: info.address)
+                contactRow(icon: "mappin", title: info.address)
 
-                Divider().padding(.leading, 56)
+                separator
 
                 // Metro
-                contactRow(icon: "tram.fill", title: "Метро", value: info.metro)
+                contactRow(icon: "tram.fill", title: "м. \(info.metro)")
 
-                Divider().padding(.leading, 56)
+                separator
 
                 // Phone
                 Button {
                     UIApplication.shared.open(info.phoneURL)
                 } label: {
-                    contactRow(icon: "phone.circle.fill", title: "Телефон", value: info.phone, isLink: true)
+                    contactRow(icon: "phone", title: info.phone, isLink: true)
                 }
                 .buttonStyle(.plain)
 
-                Divider().padding(.leading, 56)
+                separator
 
                 // Telegram
                 Button {
                     UIApplication.shared.open(info.telegram)
                 } label: {
-                    contactRow(icon: "paperplane.circle.fill", title: "Telegram", value: info.telegramHandle, isLink: true)
+                    contactRow(icon: "paperplane", title: info.telegramHandle, isLink: true)
                 }
                 .buttonStyle(.plain)
 
-                Divider().padding(.leading, 56)
+                separator
 
-                // Website
-                Button {
-                    UIApplication.shared.open(info.website)
-                } label: {
-                    contactRow(icon: "globe", title: "Сайт", value: "speakerpub.ru", isLink: true)
+                // Hours
+                ForEach(Array(info.workingHours.enumerated()), id: \.offset) { index, schedule in
+                    HStack {
+                        if index == 0 {
+                            Image(systemName: "clock")
+                                .font(.system(size: 14))
+                                .foregroundColor(.spMuted)
+                                .frame(width: 20)
+                        } else {
+                            Spacer().frame(width: 20)
+                        }
+
+                        Text(schedule.day)
+                            .font(.spBody)
+                            .foregroundColor(.spCream)
+
+                        Spacer()
+
+                        Text(schedule.hours)
+                            .font(.spBody)
+                            .foregroundColor(.spMuted)
+                    }
+                    .padding(.vertical, SP.spacing8)
+                    .padding(.horizontal, SP.spacing16)
                 }
-                .buttonStyle(.plain)
             }
-            .background(Color.spCardBackground)
-            .clipShape(RoundedRectangle(cornerRadius: SP.cardRadius))
+            .background(Color.spCard)
+            .clipShape(RoundedRectangle(cornerRadius: SP.radiusSmall))
         }
         .padding(.horizontal, SP.horizontalPadding)
     }
 
-    private func contactRow(icon: String, title: String, value: String, isLink: Bool = false) -> some View {
+    private var separator: some View {
+        Divider()
+            .background(Color.spDivider)
+            .padding(.leading, 52)
+    }
+
+    private func contactRow(icon: String, title: String, isLink: Bool = false) -> some View {
         HStack(spacing: SP.spacing12) {
             Image(systemName: icon)
-                .font(.system(size: 24))
-                .foregroundColor(.spAccent)
-                .frame(width: 32)
+                .font(.system(size: 14))
+                .foregroundColor(.spMuted)
+                .frame(width: 20)
 
-            VStack(alignment: .leading, spacing: SP.spacing2) {
-                Text(title)
-                    .font(.spCaption)
-                    .foregroundColor(.spSecondaryText)
-                Text(value)
-                    .font(.spBody)
-                    .foregroundColor(isLink ? .spAccent : .spPrimaryText)
-            }
+            Text(title)
+                .font(.spBody)
+                .foregroundColor(isLink ? .spGold : .spCream)
 
             Spacer()
-
-            if isLink {
-                Image(systemName: "chevron.right")
-                    .font(.system(size: 12, weight: .medium))
-                    .foregroundColor(.spDivider)
-            }
         }
         .padding(.vertical, SP.spacing12)
         .padding(.horizontal, SP.spacing16)
@@ -280,42 +167,36 @@ struct AboutView: View {
 
     private var mapSection: some View {
         VStack(alignment: .leading, spacing: SP.spacing12) {
-            Text("Как нас найти")
-                .font(.spSectionHeader)
-                .foregroundColor(.spPrimaryText)
-                .padding(.horizontal, SP.horizontalPadding)
-
             Map(initialPosition: .region(MKCoordinateRegion(
                 center: info.coordinate,
                 span: MKCoordinateSpan(latitudeDelta: 0.005, longitudeDelta: 0.005)
             ))) {
                 Marker(info.name, coordinate: info.coordinate)
-                    .tint(Color.speakerGreen)
+                    .tint(Color.spGreen)
             }
             .frame(height: 200)
-            .clipShape(RoundedRectangle(cornerRadius: SP.cardRadius))
-            .padding(.horizontal, SP.horizontalPadding)
+            .clipShape(RoundedRectangle(cornerRadius: SP.radiusSmall))
             .allowsHitTesting(false)
 
-            // Open in Maps button
             Button {
                 let mapItem = MKMapItem(placemark: MKPlacemark(coordinate: info.coordinate))
                 mapItem.name = info.name
                 mapItem.openInMaps()
             } label: {
-                HStack {
-                    Image(systemName: "map.fill")
-                    Text("Открыть в Картах")
+                HStack(spacing: SP.spacing8) {
+                    Image(systemName: "arrow.triangle.turn.up.right.diamond")
+                        .font(.system(size: 13))
+                    Text("Построить маршрут")
+                        .font(.spBodyMedium)
                 }
-                .font(.spBodyBold)
-                .foregroundColor(.spAccent)
+                .foregroundColor(.spGold)
                 .frame(maxWidth: .infinity)
                 .padding(.vertical, SP.spacing12)
-                .background(Color.spAccent.opacity(0.1))
+                .background(Color.spCard)
                 .clipShape(RoundedRectangle(cornerRadius: SP.radiusSmall))
             }
-            .padding(.horizontal, SP.horizontalPadding)
         }
+        .padding(.horizontal, SP.horizontalPadding)
     }
 }
 

@@ -1,46 +1,34 @@
 import SwiftUI
 
 // MARK: - Speaker Pub Color Palette
-// Derived from the bar's brand identity: classic British pub with Russian soul.
-// Deep greens, warm cream, dark accents, gold details.
+// Dark, warm pub aesthetic inspired by the website:
+// dark wood panels, aged brick, warm amber lighting.
 
 extension Color {
-    // Primary brand green — used in decorative borders and accents on the menu
-    static let speakerGreen = Color(red: 0.278, green: 0.427, blue: 0.325)       // #477053
+    // Primary dark background — deep wood/charcoal
+    static let spDark = Color(red: 0.09, green: 0.08, blue: 0.07)              // #171413
 
-    // Dark green for headers and emphasis
-    static let speakerGreenDark = Color(red: 0.180, green: 0.310, blue: 0.220)    // #2E4F38
+    // Slightly lighter surface
+    static let spSurface = Color(red: 0.13, green: 0.11, blue: 0.10)           // #211C1A
 
-    // Cream/ivory background — the warm paper tone of the menu
-    static let speakerCream = Color(red: 0.965, green: 0.953, blue: 0.929)         // #F7F3ED
+    // Card background
+    static let spCard = Color(red: 0.16, green: 0.14, blue: 0.13)              // #292321
 
-    // Slightly warmer cream for cards
-    static let speakerCreamLight = Color(red: 0.980, green: 0.973, blue: 0.957)    // #FAF8F4
+    // Warm cream for primary text
+    static let spCream = Color(red: 0.93, green: 0.90, blue: 0.85)             // #EDE6D9
 
-    // Deep dark brown/charcoal — primary text color
-    static let speakerDark = Color(red: 0.145, green: 0.129, blue: 0.118)          // #25211E
+    // Muted text
+    static let spMuted = Color(red: 0.58, green: 0.53, blue: 0.48)             // #94877A
 
-    // Gold accent for prices and highlights
-    static let speakerGold = Color(red: 0.690, green: 0.580, blue: 0.380)          // #B09461
+    // Gold accent — amber warmth
+    static let spGold = Color(red: 0.78, green: 0.65, blue: 0.42)              // #C7A66B
 
-    // Muted text color
-    static let speakerMuted = Color(red: 0.478, green: 0.447, blue: 0.412)         // #7A7269
+    // Green accent — subtle brand element
+    static let spGreen = Color(red: 0.33, green: 0.47, blue: 0.36)             // #54785C
 
-    // Separator/border color
-    static let speakerBorder = Color(red: 0.835, green: 0.812, blue: 0.776)        // #D5CFC6
+    // Divider/border
+    static let spDivider = Color(red: 0.24, green: 0.21, blue: 0.19)           // #3D3630
 
-    // Warm white for surfaces
-    static let speakerSurface = Color.white
-}
-
-// MARK: - Semantic Colors
-extension Color {
-    static let spBackground = Color.speakerCream
-    static let spCardBackground = Color.speakerCreamLight
-    static let spPrimaryText = Color.speakerDark
-    static let spSecondaryText = Color.speakerMuted
-    static let spAccent = Color.speakerGreen
-    static let spAccentDark = Color.speakerGreenDark
-    static let spPrice = Color.speakerGold
-    static let spDivider = Color.speakerBorder
+    // Overlay for images
+    static let spOverlay = Color.black.opacity(0.55)
 }
