@@ -1,26 +1,17 @@
 import SwiftUI
 
-// MARK: - Menu Item Row
+// MARK: - Menu Item Row (non-interactive display)
 
 struct MenuItemRow: View {
     let item: MenuItem
-    @Environment(FavoritesManager.self) private var favorites
 
     var body: some View {
         HStack(alignment: .center, spacing: SP.spacing12) {
             VStack(alignment: .leading, spacing: SP.spacing4) {
-                HStack(spacing: SP.spacing6) {
-                    Text(item.name)
-                        .font(.spBody)
-                        .foregroundColor(.spCream)
-                        .lineLimit(2)
-
-                    if favorites.isFavorite(item) {
-                        Image(systemName: "heart.fill")
-                            .font(.system(size: 9))
-                            .foregroundColor(.spGold.opacity(0.7))
-                    }
-                }
+                Text(item.name)
+                    .font(.spBody)
+                    .foregroundColor(.spCream)
+                    .lineLimit(2)
 
                 if let desc = item.description {
                     Text(desc)
@@ -45,7 +36,6 @@ struct MenuItemRow: View {
         }
         .padding(.horizontal, SP.horizontalPadding)
         .padding(.vertical, SP.spacing12)
-        .contentShape(Rectangle())
     }
 }
 
@@ -66,5 +56,4 @@ struct MenuItemRow: View {
         ))
     }
     .background(Color.spCard)
-    .environment(FavoritesManager.shared)
 }

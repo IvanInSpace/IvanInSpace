@@ -3,7 +3,6 @@ import SwiftUI
 // MARK: - Kitchen Menu View
 
 struct KitchenMenuView: View {
-    @Environment(FavoritesManager.self) private var favorites
     private let categories = MenuData.kitchenSection.categories
 
     var body: some View {
@@ -43,5 +42,4 @@ struct KitchenMenuView: View {
 
 #Preview {
     KitchenMenuView()
-        .environment(FavoritesManager.shared)
 }

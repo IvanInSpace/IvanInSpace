@@ -5,23 +5,43 @@ import MapKit
 
 struct AboutView: View {
     private let info = BarInfo.shared
+    @State private var expandedPhoto: Int? = nil
+    @Namespace private var photoNamespace
 
     var body: some View {
         NavigationStack {
-            ScrollView {
-                VStack(spacing: SP.spacing32) {
-                    aboutSection
-                    atmosphereSection
-                    contactsSection
-                    mapSection
+            ZStack {
+                ScrollView {
+                    VStack(spacing: SP.spacing32) {
+                        logoSection
+                        aboutSection
+                        atmosphereGrid
+                        contactsSection
+                        mapSection
+                    }
+                    .padding(.bottom, 80)
                 }
-                .padding(.bottom, SP.spacing40)
+                .background(Color.spDark)
+
+                // Expanded photo overlay
+                if let index = expandedPhoto {
+                    expandedPhotoOverlay(index: index)
+                }
             }
-            .background(Color.spDark)
             .navigationTitle("О нас")
             .navigationBarTitleDisplayMode(.inline)
             .toolbarColorScheme(.dark, for: .navigationBar)
         }
+    }
+
+    // MARK: - Logo
+
+    private var logoSection: some View {
+        Image("layer")
+            .resizable()
+            .aspectRatio(contentMode: .fit)
+            .frame(height: 60)
+            .padding(.top, SP.spacing16)
     }
 
     // MARK: - About
@@ -39,31 +59,74 @@ struct AboutView: View {
                 .lineSpacing(6)
         }
         .padding(.horizontal, SP.horizontalPadding)
-        .padding(.top, SP.spacing24)
     }
 
-    // MARK: - Atmosphere Carousel
+    // MARK: - Atmosphere Mosaic Grid
 
-    private var atmosphereSection: some View {
-        VStack(alignment: .leading, spacing: SP.spacing16) {
+    private var atmosphereGrid: some View {
+        VStack(alignment: .leading, spacing: SP.spacing12) {
             Text("АТМОСФЕРА")
                 .font(.spBrandSmall)
                 .tracking(3)
                 .foregroundColor(.spGold)
                 .padding(.horizontal, SP.horizontalPadding)
 
-            ScrollView(.horizontal, showsIndicators: false) {
-                LazyHStack(spacing: SP.spacing12) {
-                    ForEach(1...5, id: \.self) { index in
+            // Mosaic: 2 columns, varying heights
+            let spacing: CGFloat = 4
+            let columns = [
+                GridItem(.flexible(), spacing: spacing),
+                GridItem(.flexible(), spacing: spacing)
+            ]
+
+            LazyVGrid(columns: columns, spacing: spacing) {
+                ForEach(1...5, id: \.self) { index in
+                    if expandedPhoto != index {
                         Image("atmo\(index)")
                             .resizable()
                             .aspectRatio(contentMode: .fill)
-                            .frame(width: 280, height: 200)
-                            .clipShape(RoundedRectangle(cornerRadius: SP.radiusSmall))
+                            .frame(height: index == 1 || index == 4 ? 140 : 100)
+                            .clipShape(RoundedRectangle(cornerRadius: 4))
+                            .matchedGeometryEffect(id: "photo_\(index)", in: photoNamespace)
+                            .onTapGesture {
+                                withAnimation(.spring(response: 0.35, dampingFraction: 0.85)) {
+                                    expandedPhoto = index
+                                }
+                            }
+                    } else {
+                        // Placeholder to keep grid layout
+                        Color.clear
+                            .frame(height: index == 1 || index == 4 ? 140 : 100)
                     }
                 }
-                .padding(.horizontal, SP.horizontalPadding)
             }
+            .padding(.horizontal, SP.horizontalPadding)
+        }
+    }
+
+    // MARK: - Expanded Photo Overlay
+
+    private func expandedPhotoOverlay(index: Int) -> some View {
+        ZStack {
+            Color.black.opacity(0.85)
+                .ignoresSafeArea()
+                .onTapGesture {
+                    withAnimation(.spring(response: 0.35, dampingFraction: 0.85)) {
+                        expandedPhoto = nil
+                    }
+                }
+
+            Image("atmo\(index)")
+                .resizable()
+                .aspectRatio(contentMode: .fit)
+                .frame(maxWidth: UIScreen.main.bounds.width * 0.8,
+                       maxHeight: UIScreen.main.bounds.height * 0.8)
+                .clipShape(RoundedRectangle(cornerRadius: SP.radiusSmall))
+                .matchedGeometryEffect(id: "photo_\(index)", in: photoNamespace)
+                .onTapGesture {
+                    withAnimation(.spring(response: 0.35, dampingFraction: 0.85)) {
+                        expandedPhoto = nil
+                    }
+                }
         }
     }
 
@@ -77,17 +140,11 @@ struct AboutView: View {
                 .foregroundColor(.spGold)
 
             VStack(spacing: 0) {
-                // Address
                 contactRow(icon: "mappin", title: info.address)
-
                 separator
-
-                // Metro
                 contactRow(icon: "tram.fill", title: "м. \(info.metro)")
-
                 separator
 
-                // Phone
                 Button {
                     UIApplication.shared.open(info.phoneURL)
                 } label: {
@@ -97,7 +154,6 @@ struct AboutView: View {
 
                 separator
 
-                // Telegram
                 Button {
                     UIApplication.shared.open(info.telegram)
                 } label: {
@@ -107,7 +163,6 @@ struct AboutView: View {
 
                 separator
 
-                // Hours
                 ForEach(Array(info.workingHours.enumerated()), id: \.offset) { index, schedule in
                     HStack {
                         if index == 0 {

@@ -85,7 +85,6 @@ struct BarHeroCard: View {
 struct DrinksCategoryListView: View {
     let title: String
     let categories: [MenuCategory]
-    @Environment(FavoritesManager.self) private var favorites
 
     var body: some View {
         ScrollView {
@@ -128,12 +127,7 @@ struct CategoryBlock: View {
 
             VStack(spacing: 0) {
                 ForEach(category.items) { item in
-                    NavigationLink {
-                        MenuItemDetailView(item: item)
-                    } label: {
-                        MenuItemRow(item: item)
-                    }
-                    .buttonStyle(.plain)
+                    MenuItemRow(item: item)
 
                     if item.id != category.items.last?.id {
                         Divider()
@@ -151,5 +145,4 @@ struct CategoryBlock: View {
 
 #Preview {
     BarMenuView()
-        .environment(FavoritesManager.shared)
 }

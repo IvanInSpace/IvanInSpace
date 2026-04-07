@@ -15,11 +15,11 @@
 		A10001006 /* BarInfo.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10002006; };
 		A10001007 /* MenuData.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10002007; };
 		A10001008 /* MenuItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10002008; };
-		A10001009 /* FavoritesManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10002009; };
+
 		A10001010 /* AboutView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10002010; };
 		A10001011 /* MenuItemRow.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10002011; };
 		A10001012 /* HomeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10002012; };
-		A10001013 /* MenuItemDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10002013; };
+
 		A10001014 /* BarMenuView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10002014; };
 		A10001015 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = A10002015; };
 		A10001016 /* KitchenMenuView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10002017; };
@@ -34,11 +34,11 @@
 		A10002006 /* BarInfo.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BarInfo.swift; sourceTree = "<group>"; };
 		A10002007 /* MenuData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MenuData.swift; sourceTree = "<group>"; };
 		A10002008 /* MenuItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MenuItem.swift; sourceTree = "<group>"; };
-		A10002009 /* FavoritesManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FavoritesManager.swift; sourceTree = "<group>"; };
+
 		A10002010 /* AboutView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AboutView.swift; sourceTree = "<group>"; };
 		A10002011 /* MenuItemRow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MenuItemRow.swift; sourceTree = "<group>"; };
 		A10002012 /* HomeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeView.swift; sourceTree = "<group>"; };
-		A10002013 /* MenuItemDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MenuItemDetailView.swift; sourceTree = "<group>"; };
+
 		A10002014 /* BarMenuView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BarMenuView.swift; sourceTree = "<group>"; };
 		A10002015 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		A10002017 /* KitchenMenuView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KitchenMenuView.swift; sourceTree = "<group>"; };
@@ -130,7 +130,6 @@
 		A10005006 /* Menu */ = {
 			isa = PBXGroup;
 			children = (
-				A10002013 /* MenuItemDetailView.swift */,
 				A10002014 /* BarMenuView.swift */,
 				A10002017 /* KitchenMenuView.swift */,
 			);
@@ -148,7 +147,6 @@
 		A10005008 /* Services */ = {
 			isa = PBXGroup;
 			children = (
-				A10002009 /* FavoritesManager.swift */,
 			);
 			path = Services;
 			sourceTree = "<group>";
@@ -239,11 +237,9 @@
 				A10001006 /* BarInfo.swift in Sources */,
 				A10001007 /* MenuData.swift in Sources */,
 				A10001008 /* MenuItem.swift in Sources */,
-				A10001009 /* FavoritesManager.swift in Sources */,
 				A10001010 /* AboutView.swift in Sources */,
 				A10001011 /* MenuItemRow.swift in Sources */,
 				A10001012 /* HomeView.swift in Sources */,
-				A10001013 /* MenuItemDetailView.swift in Sources */,
 				A10001014 /* BarMenuView.swift in Sources */,
 				A10001016 /* KitchenMenuView.swift in Sources */,
 			);
