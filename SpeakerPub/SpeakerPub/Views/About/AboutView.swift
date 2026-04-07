@@ -164,19 +164,16 @@ struct AboutView: View {
                 separator
 
                 ForEach(Array(info.workingHours.enumerated()), id: \.offset) { index, schedule in
-                    HStack {
-                        if index == 0 {
-                            Image(systemName: "clock")
-                                .font(.system(size: 14))
-                                .foregroundColor(.spMuted)
-                                .frame(width: 20)
-                        } else {
-                            Spacer().frame(width: 20)
-                        }
+                    HStack(spacing: SP.spacing12) {
+                        Image(systemName: "clock")
+                            .font(.system(size: 14))
+                            .foregroundColor(index == 0 ? .spMuted : .clear)
+                            .frame(width: 20)
 
                         Text(schedule.day)
                             .font(.spBody)
                             .foregroundColor(.spCream)
+                            .frame(width: 60, alignment: .leading)
 
                         Spacer()
 

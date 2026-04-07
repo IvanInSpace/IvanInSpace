@@ -68,12 +68,18 @@ struct BarHeroCard: View {
                     .foregroundColor(.white)
                     .shadow(color: .black.opacity(0.5), radius: 8, y: 4)
 
-                Image(systemName: "chevron.right")
-                    .font(.system(size: 14, weight: .light))
-                    .foregroundColor(.white.opacity(0.6))
-                    .padding(.top, SP.spacing4)
+                // Swipe arrows
+                HStack(spacing: SP.spacing24) {
+                    Image(systemName: "chevron.left")
+                        .font(.system(size: 14, weight: .light))
+                        .foregroundColor(.white.opacity(0.5))
+                    Image(systemName: "chevron.right")
+                        .font(.system(size: 14, weight: .light))
+                        .foregroundColor(.white.opacity(0.5))
+                }
+                .padding(.top, SP.spacing12)
 
-                Spacer().frame(height: 100)
+                Spacer().frame(height: 160)
             }
         }
         .frame(width: size.width, height: size.height)
