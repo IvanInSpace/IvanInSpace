@@ -1,43 +1,43 @@
 import SwiftUI
 
 // MARK: - Bar Menu View
-// Horizontal slider with two hero cards: Cask & Keg, Cocktails & Soft
+// Horizontal paging slider with two hero cards
 
 struct BarMenuView: View {
     var body: some View {
         NavigationStack {
-            ScrollView(.horizontal, showsIndicators: false) {
-                LazyHStack(spacing: 0) {
-                    // Card 1: Cask & Keg → Draught beer
-                    NavigationLink {
-                        DrinksCategoryListView(
-                            title: "Cask & Keg",
-                            categories: [MenuData.draughtBeer]
-                        )
-                    } label: {
-                        BarHeroCard(imageName: "draft", title: "Cask & Keg")
-                    }
+            GeometryReader { geo in
+                ScrollView(.horizontal, showsIndicators: false) {
+                    LazyHStack(spacing: 0) {
+                        NavigationLink {
+                            DrinksCategoryListView(
+                                title: "Cask & Keg",
+                                categories: [MenuData.draughtBeer]
+                            )
+                        } label: {
+                            BarHeroCard(imageName: "draft", title: "Cask & Keg", size: geo.size)
+                        }
 
-                    // Card 2: Cocktails & Soft → everything else
-                    NavigationLink {
-                        DrinksCategoryListView(
-                            title: "Cocktails & Soft",
-                            categories: cocktailsAndSoftCategories
-                        )
-                    } label: {
-                        BarHeroCard(imageName: "cocktails", title: "Cocktails & Soft")
+                        NavigationLink {
+                            DrinksCategoryListView(
+                                title: "Cocktails & Soft",
+                                categories: cocktailsAndSoftCategories
+                            )
+                        } label: {
+                            BarHeroCard(imageName: "cocktails", title: "Cocktails & Soft", size: geo.size)
+                        }
                     }
+                    .scrollTargetLayout()
                 }
-                .scrollTargetLayout()
+                .scrollTargetBehavior(.paging)
             }
-            .scrollTargetBehavior(.paging)
             .background(Color.spDark)
+            .ignoresSafeArea()
             .navigationBarHidden(true)
         }
     }
 
     private var cocktailsAndSoftCategories: [MenuCategory] {
-        // All bar categories except draught beer
         let excluded = MenuData.draughtBeer.id
         return MenuData.barSection.categories.filter { $0.id != excluded }
     }
@@ -48,19 +48,18 @@ struct BarMenuView: View {
 struct BarHeroCard: View {
     let imageName: String
     let title: String
+    let size: CGSize
 
     var body: some View {
         ZStack {
             Image(imageName)
                 .resizable()
                 .aspectRatio(contentMode: .fill)
-                .frame(width: UIScreen.main.bounds.width, height: UIScreen.main.bounds.height)
+                .frame(width: size.width, height: size.height)
                 .clipped()
 
-            // Dark overlay
             Color.black.opacity(0.45)
 
-            // Title
             VStack {
                 Spacer()
                 Text(title)
@@ -69,17 +68,15 @@ struct BarHeroCard: View {
                     .foregroundColor(.white)
                     .shadow(color: .black.opacity(0.5), radius: 8, y: 4)
 
-                // Subtle hint
                 Image(systemName: "chevron.right")
                     .font(.system(size: 14, weight: .light))
                     .foregroundColor(.white.opacity(0.6))
                     .padding(.top, SP.spacing4)
 
-                Spacer().frame(height: 120)
+                Spacer().frame(height: 100)
             }
         }
-        .frame(width: UIScreen.main.bounds.width)
-        .ignoresSafeArea()
+        .frame(width: size.width, height: size.height)
     }
 }
 
@@ -98,6 +95,7 @@ struct DrinksCategoryListView: View {
                 }
             }
             .padding(.vertical, SP.spacing16)
+            .padding(.bottom, 60)
         }
         .background(Color.spDark)
         .navigationTitle(title)
@@ -113,7 +111,6 @@ struct CategoryBlock: View {
 
     var body: some View {
         VStack(alignment: .leading, spacing: 0) {
-            // Header
             VStack(alignment: .leading, spacing: SP.spacing2) {
                 Text(category.name.uppercased())
                     .font(.spSmall)
@@ -129,7 +126,6 @@ struct CategoryBlock: View {
             .padding(.horizontal, SP.horizontalPadding)
             .padding(.bottom, SP.spacing12)
 
-            // Items
             VStack(spacing: 0) {
                 ForEach(category.items) { item in
                     NavigationLink {
