@@ -237,7 +237,7 @@ struct KitchenMenuView: View {
         VStack {
             Spacer()
 
-            VStack(spacing: SP.spacing20) {
+            VStack(spacing: SP.spacing12) {
                 // "Все разделы" toggle
                 Button {
                     withAnimation(.spring(response: 0.35, dampingFraction: 0.8)) {
@@ -256,12 +256,13 @@ struct KitchenMenuView: View {
 
                 // "Перейти в меню" with blur background
                 Text("Перейти в меню")
-                    .font(.system(size: 12, weight: .regular))
+                    .font(.system(size: 12, weight: .medium))
                     .tracking(1)
-                    .foregroundColor(.white.opacity(0.6))
+                    .foregroundColor(.white.opacity(0.85))
                     .padding(.horizontal, SP.spacing24)
                     .padding(.vertical, SP.spacing8)
-                    .background(.ultraThinMaterial.opacity(0.6))
+                    .background(Color.black.opacity(0.4))
+                    .background(.ultraThinMaterial.opacity(0.5))
                     .clipShape(Capsule())
 
                 // Category name
@@ -290,7 +291,7 @@ struct KitchenMenuView: View {
                 }
             }
             .frame(maxWidth: .infinity)
-            .padding(.bottom, 100)
+            .padding(.bottom, 85)
         }
     }
 }
