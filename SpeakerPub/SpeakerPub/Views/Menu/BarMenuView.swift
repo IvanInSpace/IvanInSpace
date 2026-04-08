@@ -73,56 +73,58 @@ struct SlideCard: View {
     private let timer = Timer.publish(every: 3, on: .main, in: .common).autoconnect()
 
     var body: some View {
-        ZStack {
-            // Rotating background images — fill entire screen
-            ForEach(0..<imageNames.count, id: \.self) { index in
-                Image(imageNames[index])
-                    .resizable()
-                    .aspectRatio(contentMode: .fill)
-                    .ignoresSafeArea()
-                    .opacity(index == currentImageIndex ? 1 : 0)
-            }
-
-            Color.black.opacity(0.45)
-                .ignoresSafeArea()
-
-            VStack {
-                Spacer()
-
-                Text("Перейти в меню")
-                    .font(.system(size: 12, weight: .regular))
-                    .tracking(1)
-                    .foregroundColor(.white.opacity(0.6))
-                    .padding(.bottom, SP.spacing8)
-
-                Text(title)
-                    .font(.spHero)
-                    .tracking(2)
-                    .foregroundColor(.white)
-                    .shadow(color: .black.opacity(0.5), radius: 8, y: 4)
-
-                HStack(spacing: SP.spacing24) {
-                    Image(systemName: "chevron.left")
-                        .font(.system(size: 14, weight: .light))
-                        .foregroundColor(.white.opacity(0.5))
-                    Image(systemName: "chevron.right")
-                        .font(.system(size: 14, weight: .light))
-                        .foregroundColor(.white.opacity(0.5))
+        GeometryReader { geo in
+            ZStack {
+                // Rotating background images
+                ForEach(0..<imageNames.count, id: \.self) { index in
+                    Image(imageNames[index])
+                        .resizable()
+                        .aspectRatio(contentMode: .fill)
+                        .frame(width: geo.size.width, height: geo.size.height)
+                        .clipped()
+                        .opacity(index == currentImageIndex ? 1 : 0)
                 }
-                .padding(.top, SP.spacing12)
 
-                HStack(spacing: 4) {
-                    ForEach(0..<totalSlides, id: \.self) { i in
-                        Circle()
-                            .fill(i == slideIndex ? Color.white : Color.white.opacity(0.3))
-                            .frame(width: 5, height: 5)
+                Color.black.opacity(0.45)
+
+                VStack {
+                    Spacer()
+
+                    Text("Перейти в меню")
+                        .font(.system(size: 12, weight: .regular))
+                        .tracking(1)
+                        .foregroundColor(.white.opacity(0.6))
+                        .padding(.bottom, SP.spacing8)
+
+                    Text(title)
+                        .font(.spHero)
+                        .tracking(2)
+                        .foregroundColor(.white)
+                        .shadow(color: .black.opacity(0.5), radius: 8, y: 4)
+
+                    HStack(spacing: SP.spacing24) {
+                        Image(systemName: "chevron.left")
+                            .font(.system(size: 14, weight: .light))
+                            .foregroundColor(.white.opacity(0.5))
+                        Image(systemName: "chevron.right")
+                            .font(.system(size: 14, weight: .light))
+                            .foregroundColor(.white.opacity(0.5))
                     }
-                }
-                .padding(.top, SP.spacing12)
+                    .padding(.top, SP.spacing12)
 
-                Spacer().frame(height: 120)
+                    HStack(spacing: 4) {
+                        ForEach(0..<totalSlides, id: \.self) { i in
+                            Circle()
+                                .fill(i == slideIndex ? Color.white : Color.white.opacity(0.3))
+                                .frame(width: 5, height: 5)
+                        }
+                    }
+                    .padding(.top, SP.spacing12)
+                    .padding(.bottom, 80)
+                }
             }
         }
+        .ignoresSafeArea()
         .onReceive(timer) { _ in
             guard imageNames.count > 1 else { return }
             withAnimation(.easeInOut(duration: 0.8)) {
