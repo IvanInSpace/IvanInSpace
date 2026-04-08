@@ -18,12 +18,8 @@ struct KitchenMenuView: View {
     ]
 
     var body: some View {
-        NavigationStack {
-            GeometryReader { geo in
-                let fullSize = CGSize(
-                    width: geo.size.width,
-                    height: geo.size.height + geo.safeAreaInsets.top + geo.safeAreaInsets.bottom
-                )
+        GeometryReader { geo in
+            NavigationStack {
                 TabView(selection: $currentSlide) {
                     ForEach(0..<slides.count, id: \.self) { index in
                         let (category, images, title) = slides[index]
@@ -33,7 +29,7 @@ struct KitchenMenuView: View {
                             SlideCard(
                                 imageNames: images,
                                 title: title,
-                                size: fullSize,
+                                size: geo.size,
                                 totalSlides: slides.count,
                                 slideIndex: index
                             )
@@ -42,11 +38,11 @@ struct KitchenMenuView: View {
                     }
                 }
                 .tabViewStyle(.page(indexDisplayMode: .never))
+                .background(Color.spDark)
+                .toolbar(.hidden, for: .navigationBar)
             }
-            .background(Color.spDark)
-            .ignoresSafeArea()
-            .toolbar(.hidden, for: .navigationBar)
         }
+        .ignoresSafeArea()
     }
 }
 
