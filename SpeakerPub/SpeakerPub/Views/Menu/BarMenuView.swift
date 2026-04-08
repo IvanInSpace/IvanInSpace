@@ -15,7 +15,7 @@ struct BarMenuView: View {
                                 categories: [MenuData.draughtBeer]
                             )
                         } label: {
-                            BarHeroCard(imageNames: ["draft"], title: "Cask & Keg", size: geo.size)
+                            BarHeroCard(imageNames: ["draft_1", "draft_2", "draft_3"], title: "Cask & Keg", size: geo.size)
                         }
 
                         NavigationLink {
