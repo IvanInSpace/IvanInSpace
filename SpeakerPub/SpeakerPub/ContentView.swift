@@ -25,7 +25,6 @@ struct ContentView: View {
         }
         .ignoresSafeArea(.keyboard)
         .preferredColorScheme(.dark)
-        .sensoryFeedback(.selection, trigger: selectedTab)
     }
 
     // MARK: - Tab Bar (for Bar, Kitchen, About)

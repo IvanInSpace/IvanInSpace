@@ -235,29 +235,7 @@ struct AboutView: View {
             }
             .frame(height: 200)
             .clipShape(RoundedRectangle(cornerRadius: SP.radiusSmall))
-
-            // Map buttons row
-            HStack(spacing: SP.spacing8) {
-                Button {
-                    let mapItem = MKMapItem(placemark: MKPlacemark(coordinate: info.coordinate))
-                    mapItem.name = info.name
-                    mapItem.openInMaps()
-                } label: {
-                    mapButton(text: "Apple Maps")
-                }
-
-                Button {
-                    // Try Yandex app, fallback to web
-                    let appURL = info.yandexMapsURL
-                    if UIApplication.shared.canOpenURL(appURL) {
-                        UIApplication.shared.open(appURL)
-                    } else {
-                        UIApplication.shared.open(info.yandexMapsWebURL)
-                    }
-                } label: {
-                    mapButton(text: "Яндекс.Карты")
-                }
-            }
+            .allowsHitTesting(false)
 
             Button {
                 UIApplication.shared.open(info.phoneURL)
@@ -276,16 +254,6 @@ struct AboutView: View {
             }
         }
         .padding(.horizontal, SP.horizontalPadding)
-    }
-
-    private func mapButton(text: String) -> some View {
-        Text(text)
-            .font(.spCaption)
-            .foregroundColor(.spCream)
-            .frame(maxWidth: .infinity)
-            .padding(.vertical, SP.spacing8)
-            .background(Color.spCard)
-            .clipShape(RoundedRectangle(cornerRadius: SP.radiusSmall))
     }
 }
 

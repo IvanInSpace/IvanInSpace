@@ -18,7 +18,6 @@
 
 		A10001010 /* AboutView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10002010; };
 		A10001011 /* MenuItemRow.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10002011; };
-		A10001019 /* MenuSearchView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10002019; };
 		A10001012 /* HomeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10002012; };
 		A10001018 /* ProfileView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10002018; };
 
@@ -39,7 +38,6 @@
 
 		A10002010 /* AboutView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AboutView.swift; sourceTree = "<group>"; };
 		A10002011 /* MenuItemRow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MenuItemRow.swift; sourceTree = "<group>"; };
-		A10002019 /* MenuSearchView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MenuSearchView.swift; sourceTree = "<group>"; };
 		A10002012 /* HomeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeView.swift; sourceTree = "<group>"; };
 		A10002018 /* ProfileView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileView.swift; sourceTree = "<group>"; };
 
@@ -153,7 +151,6 @@
 			isa = PBXGroup;
 			children = (
 				A10002011 /* MenuItemRow.swift */,
-				A10002019 /* MenuSearchView.swift */,
 			);
 			path = Components;
 			sourceTree = "<group>";
@@ -238,7 +235,6 @@
 				A10001008 /* MenuItem.swift in Sources */,
 				A10001010 /* AboutView.swift in Sources */,
 				A10001011 /* MenuItemRow.swift in Sources */,
-				A10001019 /* MenuSearchView.swift in Sources */,
 				A10001012 /* HomeView.swift in Sources */,
 				A10001018 /* ProfileView.swift in Sources */,
 				A10001014 /* BarMenuView.swift in Sources */,
