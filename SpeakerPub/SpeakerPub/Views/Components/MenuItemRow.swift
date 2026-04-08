@@ -44,15 +44,13 @@ struct MenuItemRow: View {
         MenuItemRow(item: MenuItem(
             name: "Guinness",
             description: "Ирландский стаут",
-            prices: [PriceOption(amount: 950, label: "568 мл"), PriceOption(amount: 500, label: "280 мл")],
-            tags: [.popular]
+            prices: [PriceOption(amount: 950, label: "568 мл"), PriceOption(amount: 500, label: "280 мл")]
         ))
         Divider().background(Color.spDivider)
         MenuItemRow(item: MenuItem(
             name: "Guest Cask Ale",
             description: "Спрашивайте у бармена",
-            prices: [],
-            tags: [.caskAle]
+            prices: []
         ))
     }
     .background(Color.spCard)
