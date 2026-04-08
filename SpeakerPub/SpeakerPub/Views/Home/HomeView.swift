@@ -6,6 +6,7 @@ struct HomeView: View {
     @Binding var selectedTab: Int
     @State private var currentImageIndex = 0
     @State private var currentEventIndex = 0
+    @State private var showProfile = false
     private let backgrounds = ["main1", "main2", "main3"]
     private let timer = Timer.publish(every: 4, on: .main, in: .common).autoconnect()
     private let info = BarInfo.shared
@@ -16,19 +17,26 @@ struct HomeView: View {
                 backgroundLayer(size: geo.size)
 
                 VStack {
-                    Spacer()
-                    navIcons
-                    eventsCarousel
-
-                    // Background page dots
-                    HStack(spacing: 6) {
-                        ForEach(0..<backgrounds.count, id: \.self) { index in
-                            Circle()
-                                .fill(index == currentImageIndex ? Color.white : Color.white.opacity(0.3))
-                                .frame(width: 5, height: 5)
+                    // Profile icon top-right
+                    HStack {
+                        Spacer()
+                        Button {
+                            showProfile = true
+                        } label: {
+                            Image(systemName: "person.circle")
+                                .font(.system(size: 24, weight: .light))
+                                .foregroundColor(.white.opacity(0.8))
+                                .frame(width: 44, height: 44)
                         }
                     }
-                    .padding(.bottom, SP.spacing16)
+                    .padding(.top, geo.safeAreaInsets.top + 4)
+                    .padding(.trailing, SP.spacing16)
+
+                    Spacer()
+
+                    navIcons
+                    eventsCarousel
+                        .padding(.bottom, SP.spacing32)
                 }
             }
         }
@@ -37,6 +45,9 @@ struct HomeView: View {
             withAnimation(.easeInOut(duration: 1.0)) {
                 currentImageIndex = (currentImageIndex + 1) % backgrounds.count
             }
+        }
+        .fullScreenCover(isPresented: $showProfile) {
+            ProfileView()
         }
     }
 
@@ -65,7 +76,7 @@ struct HomeView: View {
         }
     }
 
-    // MARK: - Navigation Icons (compact)
+    // MARK: - Navigation Icons
 
     private var navIcons: some View {
         HStack(spacing: 36) {
@@ -91,12 +102,11 @@ struct HomeView: View {
         }
     }
 
-    // MARK: - Events Carousel (swipeable)
+    // MARK: - Events Carousel
 
     private var eventsCarousel: some View {
         VStack(spacing: SP.spacing8) {
             HStack(spacing: 0) {
-                // Left arrow
                 Button {
                     withAnimation(.easeInOut(duration: 0.3)) {
                         currentEventIndex = (currentEventIndex - 1 + info.events.count) % info.events.count
@@ -110,11 +120,45 @@ struct HomeView: View {
                 }
                 .buttonStyle(.plain)
 
-                // Card area with swipe gesture
-                eventCardArea
-                    .frame(maxWidth: .infinity)
+                ZStack {
+                    ForEach(Array(info.events.enumerated()), id: \.element.id) { index, event in
+                        if index == currentEventIndex {
+                            VStack(spacing: SP.spacing6) {
+                                Text(event.day.uppercased())
+                                    .font(.spSmall)
+                                    .tracking(1)
+                                    .foregroundColor(.spGold)
 
-                // Right arrow
+                                Text(event.title)
+                                    .font(.spBodyMedium)
+                                    .foregroundColor(.white)
+
+                                Text(event.description)
+                                    .font(.spCaption)
+                                    .foregroundColor(.white.opacity(0.6))
+                                    .lineLimit(2)
+                                    .multilineTextAlignment(.center)
+                            }
+                            .padding(.vertical, SP.spacing12)
+                            .padding(.horizontal, SP.spacing8)
+                            .transition(.opacity)
+                        }
+                    }
+                }
+                .frame(maxWidth: .infinity)
+                .gesture(
+                    DragGesture(minimumDistance: 30)
+                        .onEnded { value in
+                            withAnimation(.easeInOut(duration: 0.3)) {
+                                if value.translation.width < 0 {
+                                    currentEventIndex = (currentEventIndex + 1) % info.events.count
+                                } else {
+                                    currentEventIndex = (currentEventIndex - 1 + info.events.count) % info.events.count
+                                }
+                            }
+                        }
+                )
+
                 Button {
                     withAnimation(.easeInOut(duration: 0.3)) {
                         currentEventIndex = (currentEventIndex + 1) % info.events.count
@@ -139,47 +183,6 @@ struct HomeView: View {
                 }
             }
         }
-        .padding(.bottom, SP.spacing12)
-    }
-
-    private var eventCardArea: some View {
-        ZStack {
-            ForEach(Array(info.events.enumerated()), id: \.element.id) { index, event in
-                if index == currentEventIndex {
-                    VStack(spacing: SP.spacing6) {
-                        Text(event.day.uppercased())
-                            .font(.spSmall)
-                            .tracking(1)
-                            .foregroundColor(.spGold)
-
-                        Text(event.title)
-                            .font(.spBodyMedium)
-                            .foregroundColor(.white)
-
-                        Text(event.description)
-                            .font(.spCaption)
-                            .foregroundColor(.white.opacity(0.6))
-                            .lineLimit(2)
-                            .multilineTextAlignment(.center)
-                    }
-                    .padding(.vertical, SP.spacing12)
-                    .padding(.horizontal, SP.spacing8)
-                    .transition(.opacity)
-                }
-            }
-        }
-        .gesture(
-            DragGesture(minimumDistance: 30)
-                .onEnded { value in
-                    withAnimation(.easeInOut(duration: 0.3)) {
-                        if value.translation.width < 0 {
-                            currentEventIndex = (currentEventIndex + 1) % info.events.count
-                        } else {
-                            currentEventIndex = (currentEventIndex - 1 + info.events.count) % info.events.count
-                        }
-                    }
-                }
-        )
     }
 }
 

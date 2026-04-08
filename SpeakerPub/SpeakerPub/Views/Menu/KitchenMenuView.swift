@@ -1,107 +1,105 @@
 import SwiftUI
 
 // MARK: - Kitchen Menu View
-// Category icon grid over background, tapping opens category list
+// Horizontal paging slider with 9 category cards (like Bar)
 
 struct KitchenMenuView: View {
-    @State private var selectedCategory: MenuCategory? = nil
-    private let categories = MenuData.kitchenSection.categories
-
-    // Ordered layout: rows of icons
-    // Row 1: Английские пироги — Холодные закуски (center)
-    // Row 2: Салаты — Супы — Сэндвичи
-    // Row 3: Горячие закуски — Бургеры — Горячие блюда
-    // Row 4: Десерты (center)
-
-    private var categoryRows: [[(MenuCategory, String)]] {
-        let cats = categoriesDict
-        return [
-            [cats["Английские пироги"]!, cats["Холодные закуски"]!],
-            [cats["Салаты"]!, cats["Супы"]!, cats["Сэндвичи"]!],
-            [cats["Горячие закуски"]!, cats["Бургеры"]!, cats["Горячие блюда"]!],
-            [cats["Десерты"]!]
-        ]
-    }
-
-    private var categoriesDict: [String: (MenuCategory, String)] {
-        var d: [String: (MenuCategory, String)] = [:]
-        for cat in categories {
-            d[cat.name] = (cat, iconFor(cat.name))
-        }
-        return d
-    }
-
-    private func iconFor(_ name: String) -> String {
-        switch name {
-        case "Английские пироги": return "chart.pie"
-        case "Холодные закуски": return "snowflake"
-        case "Салаты": return "leaf"
-        case "Супы": return "mug"
-        case "Сэндвичи": return "takeoutbag.and.cup.and.straw"
-        case "Горячие закуски": return "flame"
-        case "Бургеры": return "circle.grid.cross"
-        case "Горячие блюда": return "frying.pan"
-        case "Десерты": return "birthday.cake"
-        default: return "fork.knife"
-        }
-    }
+    // Each slide: (category, image asset name, display title)
+    private let slides: [(MenuCategory, String, String)] = [
+        (MenuData.coldStarters, "cold_starters", "Холодные закуски"),
+        (MenuData.hotStarters, "hot_starters", "Горячие закуски"),
+        (MenuData.salads, "salads", "Салаты"),
+        (MenuData.soups, "soups", "Супы"),
+        (MenuData.burgerAndMore, "burgers", "Бургеры"),
+        (MenuData.sandwiches, "sandwiches", "Сэндвичи"),
+        (MenuData.hotDishes, "hot_dishes", "Горячие блюда"),
+        (MenuData.englishPies, "english_pies", "Английские пироги"),
+        (MenuData.desserts, "desserts", "Десерты")
+    ]
 
     var body: some View {
         NavigationStack {
-            ZStack {
-                // Background
-                Image("kitchen")
-                    .resizable()
-                    .aspectRatio(contentMode: .fill)
-                    .frame(maxWidth: .infinity, maxHeight: .infinity)
-                    .clipped()
-                    .overlay(Color.black.opacity(0.65))
-                    .ignoresSafeArea()
-
-                // Category grid
-                VStack(spacing: 28) {
-                    // Header
-                    VStack(spacing: SP.spacing4) {
-                        Text("КУХНЯ")
-                            .font(.spBrandSmall)
-                            .tracking(4)
-                            .foregroundColor(.spGold)
-                        Text("Kitchen")
-                            .font(.spHero)
-                            .foregroundColor(.spCream)
-                    }
-                    .padding(.bottom, SP.spacing8)
-
-                    // Icon rows
-                    ForEach(0..<categoryRows.count, id: \.self) { rowIndex in
-                        HStack(spacing: 36) {
-                            ForEach(0..<categoryRows[rowIndex].count, id: \.self) { colIndex in
-                                let (cat, icon) = categoryRows[rowIndex][colIndex]
-                                Button {
-                                    selectedCategory = cat
-                                } label: {
-                                    VStack(spacing: 6) {
-                                        Image(systemName: icon)
-                                            .font(.system(size: 20, weight: .light))
-                                        Text(cat.name)
-                                            .font(.system(size: 10, weight: .regular))
-                                            .tracking(0.5)
-                                            .lineLimit(2)
-                                            .multilineTextAlignment(.center)
-                                    }
-                                    .foregroundColor(.white)
-                                    .frame(width: 80)
-                                }
+            GeometryReader { geo in
+                ScrollView(.horizontal, showsIndicators: false) {
+                    LazyHStack(spacing: 0) {
+                        ForEach(0..<slides.count, id: \.self) { index in
+                            let (category, image, title) = slides[index]
+                            NavigationLink {
+                                KitchenCategoryDetailView(category: category)
+                            } label: {
+                                KitchenHeroCard(
+                                    imageName: image,
+                                    title: title,
+                                    size: geo.size,
+                                    totalSlides: slides.count,
+                                    currentIndex: index
+                                )
                             }
                         }
                     }
+                    .scrollTargetLayout()
                 }
+                .scrollTargetBehavior(.paging)
             }
+            .background(Color.spDark)
+            .ignoresSafeArea()
             .navigationBarHidden(true)
-            .navigationDestination(item: $selectedCategory) { category in
-                KitchenCategoryDetailView(category: category)
+        }
+    }
+}
+
+// MARK: - Kitchen Hero Card
+
+struct KitchenHeroCard: View {
+    let imageName: String
+    let title: String
+    let size: CGSize
+    let totalSlides: Int
+    let currentIndex: Int
+
+    var body: some View {
+        ZStack {
+            Image(imageName)
+                .resizable()
+                .aspectRatio(contentMode: .fill)
+                .frame(width: size.width, height: size.height)
+                .clipped()
+
+            Color.black.opacity(0.45)
+
+            VStack {
+                Spacer()
+
+                Text(title)
+                    .font(.spHero)
+                    .tracking(2)
+                    .foregroundColor(.white)
+                    .shadow(color: .black.opacity(0.5), radius: 8, y: 4)
+
+                HStack(spacing: SP.spacing24) {
+                    Image(systemName: "chevron.left")
+                        .font(.system(size: 14, weight: .light))
+                        .foregroundColor(.white.opacity(0.5))
+                    Image(systemName: "chevron.right")
+                        .font(.system(size: 14, weight: .light))
+                        .foregroundColor(.white.opacity(0.5))
+                }
+                .padding(.top, SP.spacing12)
+
+                // Slide dots
+                HStack(spacing: 4) {
+                    ForEach(0..<totalSlides, id: \.self) { i in
+                        Circle()
+                            .fill(i == currentIndex ? Color.white : Color.white.opacity(0.3))
+                            .frame(width: 5, height: 5)
+                    }
+                }
+                .padding(.top, SP.spacing12)
+
+                Spacer().frame(height: 100)
             }
         }
+        .frame(width: size.width, height: size.height)
     }
 }
 

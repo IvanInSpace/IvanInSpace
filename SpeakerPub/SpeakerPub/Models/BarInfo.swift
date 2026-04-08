@@ -53,7 +53,7 @@ struct BarInfo {
         BarEvent(
             title: "US Pub Quiz",
             day: "Каждый понедельник",
-            description: "Командный квиз с призами. 1 место — 5000 ₽, 2 место — 3000 ₽, 3 место — 1000 ₽ сертификатами бара.",
+            description: "Командный квиз с призами.",
             icon: "brain.head.profile"
         ),
         BarEvent(
