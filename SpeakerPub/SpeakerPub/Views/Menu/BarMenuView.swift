@@ -1,9 +1,11 @@
 import SwiftUI
 
 // MARK: - Bar Menu View
+// Custom circular pager — no TabView
 
 struct BarMenuView: View {
     @State private var currentSlide = 0
+    @State private var selectedCategory: Int? = nil
     private let totalSlides = 2
 
     private let slideData: [(title: String, images: [String])] = [
@@ -11,48 +13,59 @@ struct BarMenuView: View {
         ("Cocktails & Soft", ["cocktails_1", "cocktails_2", "cocktails_3"])
     ]
 
-    var body: some View {
-        GeometryReader { geo in
-            NavigationStack {
-                TabView(selection: $currentSlide) {
-                    ForEach(0..<totalSlides, id: \.self) { index in
-                        NavigationLink {
-                            DrinksCategoryListView(
-                                title: slideData[index].title,
-                                categories: index == 0 ? [MenuData.draughtBeer] : cocktailsAndSoftCategories
-                            )
-                        } label: {
-                            SlideCard(
-                                imageNames: slideData[index].images,
-                                title: slideData[index].title,
-                                size: geo.size,
-                                totalSlides: totalSlides,
-                                slideIndex: index
-                            )
-                        }
-                        .tag(index)
-                    }
-                }
-                .tabViewStyle(.page(indexDisplayMode: .never))
-                .background(Color.spDark)
-                .toolbar(.hidden, for: .navigationBar)
-            }
-        }
-        .ignoresSafeArea()
+    private var categoriesForSlide: [[MenuCategory]] {
+        let excluded = MenuData.draughtBeer.id
+        let cocktailsCats = MenuData.barSection.categories.filter { $0.id != excluded }
+        return [[MenuData.draughtBeer], cocktailsCats]
     }
 
-    private var cocktailsAndSoftCategories: [MenuCategory] {
-        let excluded = MenuData.draughtBeer.id
-        return MenuData.barSection.categories.filter { $0.id != excluded }
+    var body: some View {
+        NavigationStack {
+            ZStack {
+                // Full-screen slide
+                SlideCard(
+                    imageNames: slideData[currentSlide].images,
+                    title: slideData[currentSlide].title,
+                    totalSlides: totalSlides,
+                    slideIndex: currentSlide
+                )
+                .id(currentSlide)
+                .transition(.opacity)
+            }
+            .ignoresSafeArea()
+            .gesture(
+                DragGesture(minimumDistance: 50, coordinateSpace: .local)
+                    .onEnded { value in
+                        // Only horizontal swipes (ignore vertical)
+                        guard abs(value.translation.width) > abs(value.translation.height) else { return }
+                        withAnimation(.easeInOut(duration: 0.3)) {
+                            if value.translation.width < 0 {
+                                currentSlide = (currentSlide + 1) % totalSlides
+                            } else {
+                                currentSlide = (currentSlide - 1 + totalSlides) % totalSlides
+                            }
+                        }
+                    }
+            )
+            .onTapGesture {
+                selectedCategory = currentSlide
+            }
+            .navigationDestination(item: $selectedCategory) { index in
+                DrinksCategoryListView(
+                    title: slideData[index].title,
+                    categories: categoriesForSlide[index]
+                )
+            }
+            .toolbar(.hidden, for: .navigationBar)
+        }
     }
 }
 
-// MARK: - Shared Slide Card
+// MARK: - Shared Slide Card (full screen, no frame constraint)
 
 struct SlideCard: View {
     let imageNames: [String]
     let title: String
-    let size: CGSize
     let totalSlides: Int
     let slideIndex: Int
 
@@ -61,16 +74,17 @@ struct SlideCard: View {
 
     var body: some View {
         ZStack {
+            // Rotating background images — fill entire screen
             ForEach(0..<imageNames.count, id: \.self) { index in
                 Image(imageNames[index])
                     .resizable()
                     .aspectRatio(contentMode: .fill)
-                    .frame(width: size.width, height: size.height)
-                    .clipped()
+                    .ignoresSafeArea()
                     .opacity(index == currentImageIndex ? 1 : 0)
             }
 
             Color.black.opacity(0.45)
+                .ignoresSafeArea()
 
             VStack {
                 Spacer()
@@ -109,7 +123,6 @@ struct SlideCard: View {
                 Spacer().frame(height: 120)
             }
         }
-        .frame(width: size.width, height: size.height)
         .onReceive(timer) { _ in
             guard imageNames.count > 1 else { return }
             withAnimation(.easeInOut(duration: 0.8)) {

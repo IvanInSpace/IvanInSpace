@@ -1,9 +1,11 @@
 import SwiftUI
 
 // MARK: - Kitchen Menu View
+// Custom circular pager — no TabView
 
 struct KitchenMenuView: View {
     @State private var currentSlide = 0
+    @State private var selectedCategory: Int? = nil
 
     private let slides: [(MenuCategory, [String], String)] = [
         (MenuData.coldStarters, ["cold_starters_1", "cold_starters_2", "cold_starters_3"], "Холодные закуски"),
@@ -18,31 +20,41 @@ struct KitchenMenuView: View {
     ]
 
     var body: some View {
-        GeometryReader { geo in
-            NavigationStack {
-                TabView(selection: $currentSlide) {
-                    ForEach(0..<slides.count, id: \.self) { index in
-                        let (category, images, title) = slides[index]
-                        NavigationLink {
-                            KitchenCategoryDetailView(category: category)
-                        } label: {
-                            SlideCard(
-                                imageNames: images,
-                                title: title,
-                                size: geo.size,
-                                totalSlides: slides.count,
-                                slideIndex: index
-                            )
-                        }
-                        .tag(index)
-                    }
-                }
-                .tabViewStyle(.page(indexDisplayMode: .never))
-                .background(Color.spDark)
-                .toolbar(.hidden, for: .navigationBar)
+        NavigationStack {
+            ZStack {
+                let (_, images, title) = slides[currentSlide]
+
+                SlideCard(
+                    imageNames: images,
+                    title: title,
+                    totalSlides: slides.count,
+                    slideIndex: currentSlide
+                )
+                .id(currentSlide)
+                .transition(.opacity)
             }
+            .ignoresSafeArea()
+            .gesture(
+                DragGesture(minimumDistance: 50, coordinateSpace: .local)
+                    .onEnded { value in
+                        guard abs(value.translation.width) > abs(value.translation.height) else { return }
+                        withAnimation(.easeInOut(duration: 0.3)) {
+                            if value.translation.width < 0 {
+                                currentSlide = (currentSlide + 1) % slides.count
+                            } else {
+                                currentSlide = (currentSlide - 1 + slides.count) % slides.count
+                            }
+                        }
+                    }
+            )
+            .onTapGesture {
+                selectedCategory = currentSlide
+            }
+            .navigationDestination(item: $selectedCategory) { index in
+                KitchenCategoryDetailView(category: slides[index].0)
+            }
+            .toolbar(.hidden, for: .navigationBar)
         }
-        .ignoresSafeArea()
     }
 }
 
