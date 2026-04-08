@@ -5,8 +5,8 @@ import MapKit
 
 struct AboutView: View {
     private let info = BarInfo.shared
+    private let photoCount = 12
     @State private var expandedPhoto: Int? = nil
-    @Namespace private var photoNamespace
 
     var body: some View {
         NavigationStack {
@@ -23,9 +23,9 @@ struct AboutView: View {
                 }
                 .background(Color.spDark)
 
-                // Expanded photo overlay
-                if let index = expandedPhoto {
-                    expandedPhotoOverlay(index: index)
+                // Expanded photo overlay with swipe
+                if expandedPhoto != nil {
+                    expandedPhotoOverlay
                 }
             }
             .navigationTitle("О нас")
@@ -61,7 +61,7 @@ struct AboutView: View {
         .padding(.horizontal, SP.horizontalPadding)
     }
 
-    // MARK: - Atmosphere Mosaic Grid
+    // MARK: - Atmosphere Grid (12 photos, 3 per row)
 
     private var atmosphereGrid: some View {
         VStack(alignment: .leading, spacing: SP.spacing12) {
@@ -71,62 +71,81 @@ struct AboutView: View {
                 .foregroundColor(.spGold)
                 .padding(.horizontal, SP.horizontalPadding)
 
-            // Mosaic: 2 columns, varying heights
-            let spacing: CGFloat = 4
+            let spacing: CGFloat = 3
             let columns = [
+                GridItem(.flexible(), spacing: spacing),
                 GridItem(.flexible(), spacing: spacing),
                 GridItem(.flexible(), spacing: spacing)
             ]
 
             LazyVGrid(columns: columns, spacing: spacing) {
-                ForEach(1...5, id: \.self) { index in
-                    if expandedPhoto != index {
-                        Image("atmo\(index)")
-                            .resizable()
-                            .aspectRatio(contentMode: .fill)
-                            .frame(height: index == 1 || index == 4 ? 140 : 100)
-                            .clipShape(RoundedRectangle(cornerRadius: 4))
-                            .matchedGeometryEffect(id: "photo_\(index)", in: photoNamespace)
-                            .onTapGesture {
-                                withAnimation(.spring(response: 0.35, dampingFraction: 0.85)) {
-                                    expandedPhoto = index
-                                }
+                ForEach(1...photoCount, id: \.self) { index in
+                    Image("atmo\(index)")
+                        .resizable()
+                        .aspectRatio(contentMode: .fill)
+                        .frame(minHeight: 100)
+                        .aspectRatio(1, contentMode: .fill)
+                        .clipped()
+                        .onTapGesture {
+                            withAnimation(.easeInOut(duration: 0.25)) {
+                                expandedPhoto = index
                             }
-                    } else {
-                        // Placeholder to keep grid layout
-                        Color.clear
-                            .frame(height: index == 1 || index == 4 ? 140 : 100)
-                    }
+                        }
                 }
             }
             .padding(.horizontal, SP.horizontalPadding)
         }
     }
 
-    // MARK: - Expanded Photo Overlay
+    // MARK: - Expanded Photo Overlay (swipeable)
 
-    private func expandedPhotoOverlay(index: Int) -> some View {
+    private var expandedPhotoOverlay: some View {
         ZStack {
-            Color.black.opacity(0.85)
+            Color.black.opacity(0.9)
                 .ignoresSafeArea()
                 .onTapGesture {
-                    withAnimation(.spring(response: 0.35, dampingFraction: 0.85)) {
+                    withAnimation(.easeInOut(duration: 0.25)) {
                         expandedPhoto = nil
                     }
                 }
 
-            Image("atmo\(index)")
-                .resizable()
-                .aspectRatio(contentMode: .fit)
-                .frame(maxWidth: UIScreen.main.bounds.width * 0.8,
-                       maxHeight: UIScreen.main.bounds.height * 0.8)
-                .clipShape(RoundedRectangle(cornerRadius: SP.radiusSmall))
-                .matchedGeometryEffect(id: "photo_\(index)", in: photoNamespace)
-                .onTapGesture {
-                    withAnimation(.spring(response: 0.35, dampingFraction: 0.85)) {
-                        expandedPhoto = nil
-                    }
+            if let current = expandedPhoto {
+                Image("atmo\(current)")
+                    .resizable()
+                    .aspectRatio(contentMode: .fit)
+                    .frame(maxWidth: UIScreen.main.bounds.width * 0.9,
+                           maxHeight: UIScreen.main.bounds.height * 0.75)
+                    .clipShape(RoundedRectangle(cornerRadius: 8))
+                    .id(current)
+                    .transition(.opacity)
+                    .gesture(
+                        DragGesture(minimumDistance: 40)
+                            .onEnded { value in
+                                withAnimation(.easeInOut(duration: 0.25)) {
+                                    if value.translation.width < 0 {
+                                        // Swipe left → next
+                                        if current < photoCount {
+                                            expandedPhoto = current + 1
+                                        }
+                                    } else {
+                                        // Swipe right → previous
+                                        if current > 1 {
+                                            expandedPhoto = current - 1
+                                        }
+                                    }
+                                }
+                            }
+                    )
+
+                // Counter
+                VStack {
+                    Spacer()
+                    Text("\(current) / \(photoCount)")
+                        .font(.spCaption)
+                        .foregroundColor(.white.opacity(0.5))
+                        .padding(.bottom, SP.spacing48)
                 }
+            }
         }
     }
 
