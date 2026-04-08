@@ -17,23 +17,7 @@ struct HomeView: View {
                 backgroundLayer(size: geo.size)
 
                 VStack {
-                    // Profile icon top-right
-                    HStack {
-                        Spacer()
-                        Button {
-                            showProfile = true
-                        } label: {
-                            Image(systemName: "person.circle")
-                                .font(.system(size: 24, weight: .light))
-                                .foregroundColor(.white.opacity(0.8))
-                                .frame(width: 44, height: 44)
-                        }
-                    }
-                    .padding(.top, geo.safeAreaInsets.top + 4)
-                    .padding(.trailing, SP.spacing16)
-
                     Spacer()
-
                     navIcons
                     eventsCarousel
                         .padding(.bottom, SP.spacing32)
@@ -51,7 +35,7 @@ struct HomeView: View {
         }
     }
 
-    // MARK: - Background (centered)
+    // MARK: - Background
 
     private func backgroundLayer(size: CGSize) -> some View {
         ZStack {
@@ -76,13 +60,30 @@ struct HomeView: View {
         }
     }
 
-    // MARK: - Navigation Icons
+    // MARK: - Navigation Icons (Profile above Кухня)
 
     private var navIcons: some View {
-        HStack(spacing: 36) {
-            navButton(icon: "wineglass", label: "Бар", tab: 1)
-            navButton(icon: "fork.knife", label: "Кухня", tab: 2)
-            navButton(icon: "info.circle", label: "О нас", tab: 3)
+        VStack(spacing: 20) {
+            // Profile — centered above the row
+            Button {
+                showProfile = true
+            } label: {
+                VStack(spacing: 6) {
+                    Image(systemName: "person.circle")
+                        .font(.system(size: 20, weight: .light))
+                    Text("Профиль")
+                        .font(.system(size: 10, weight: .regular))
+                        .tracking(1)
+                }
+                .foregroundColor(.white)
+            }
+
+            // Main nav row
+            HStack(spacing: 36) {
+                navButton(icon: "wineglass", label: "Бар", tab: 1)
+                navButton(icon: "fork.knife", label: "Кухня", tab: 2)
+                navButton(icon: "info.circle", label: "О нас", tab: 3)
+            }
         }
         .padding(.bottom, SP.spacing24)
     }
@@ -174,7 +175,6 @@ struct HomeView: View {
             }
             .padding(.horizontal, SP.spacing4)
 
-            // Event dots
             HStack(spacing: 6) {
                 ForEach(0..<info.events.count, id: \.self) { index in
                     Circle()

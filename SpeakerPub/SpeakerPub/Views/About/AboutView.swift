@@ -103,11 +103,6 @@ struct AboutView: View {
         ZStack {
             Color.black.opacity(0.9)
                 .ignoresSafeArea()
-                .onTapGesture {
-                    withAnimation(.easeInOut(duration: 0.25)) {
-                        expandedPhoto = nil
-                    }
-                }
 
             if let current = expandedPhoto {
                 Image("atmo\(current)")
@@ -118,33 +113,25 @@ struct AboutView: View {
                     .clipShape(RoundedRectangle(cornerRadius: 8))
                     .id(current)
                     .transition(.opacity)
+                    .onTapGesture {
+                        withAnimation(.easeInOut(duration: 0.25)) {
+                            expandedPhoto = nil
+                        }
+                    }
                     .gesture(
                         DragGesture(minimumDistance: 40)
                             .onEnded { value in
                                 withAnimation(.easeInOut(duration: 0.25)) {
                                     if value.translation.width < 0 {
-                                        // Swipe left → next
-                                        if current < photoCount {
-                                            expandedPhoto = current + 1
-                                        }
+                                        // Swipe left → next (circular)
+                                        expandedPhoto = current % photoCount + 1
                                     } else {
-                                        // Swipe right → previous
-                                        if current > 1 {
-                                            expandedPhoto = current - 1
-                                        }
+                                        // Swipe right → previous (circular)
+                                        expandedPhoto = (current - 2 + photoCount) % photoCount + 1
                                     }
                                 }
                             }
                     )
-
-                // Counter
-                VStack {
-                    Spacer()
-                    Text("\(current) / \(photoCount)")
-                        .font(.spCaption)
-                        .foregroundColor(.white.opacity(0.5))
-                        .padding(.bottom, SP.spacing48)
-                }
             }
         }
     }

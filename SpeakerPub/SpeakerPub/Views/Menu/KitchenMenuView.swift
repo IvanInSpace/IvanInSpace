@@ -77,6 +77,12 @@ struct KitchenHeroCard: View {
             VStack {
                 Spacer()
 
+                Text("Перейти в меню")
+                    .font(.system(size: 12, weight: .regular))
+                    .tracking(1)
+                    .foregroundColor(.white.opacity(0.6))
+                    .padding(.bottom, SP.spacing8)
+
                 Text(title)
                     .font(.spHero)
                     .tracking(2)
