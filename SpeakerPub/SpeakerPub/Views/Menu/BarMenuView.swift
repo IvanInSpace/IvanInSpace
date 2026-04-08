@@ -14,6 +14,10 @@ struct BarMenuView: View {
     var body: some View {
         NavigationStack {
             GeometryReader { geo in
+                let fullSize = CGSize(
+                    width: geo.size.width,
+                    height: geo.size.height + geo.safeAreaInsets.top + geo.safeAreaInsets.bottom
+                )
                 TabView(selection: $currentSlide) {
                     ForEach(0..<totalSlides, id: \.self) { index in
                         NavigationLink {
@@ -25,7 +29,7 @@ struct BarMenuView: View {
                             SlideCard(
                                 imageNames: slideData[index].images,
                                 title: slideData[index].title,
-                                size: geo.size,
+                                size: fullSize,
                                 totalSlides: totalSlides,
                                 slideIndex: index
                             )
