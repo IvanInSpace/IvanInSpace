@@ -12,17 +12,11 @@ struct HomeView: View {
 
     var body: some View {
         ZStack {
-            // Rotating background
             backgroundLayer
 
-            // Content
             VStack {
                 Spacer()
-
-                // Navigation icons
                 navIcons
-
-                // Events carousel
                 eventsCarousel
 
                 // Background page dots
@@ -67,15 +61,14 @@ struct HomeView: View {
         }
     }
 
-    // MARK: - Navigation Icons
+    // MARK: - Navigation Icons (compact)
 
     private var navIcons: some View {
-        HStack(spacing: 0) {
+        HStack(spacing: 36) {
             navButton(icon: "wineglass", label: "Бар", tab: 1)
             navButton(icon: "fork.knife", label: "Кухня", tab: 2)
             navButton(icon: "info.circle", label: "О нас", tab: 3)
         }
-        .padding(.horizontal, SP.spacing32)
         .padding(.bottom, SP.spacing24)
     }
 
@@ -85,13 +78,12 @@ struct HomeView: View {
         } label: {
             VStack(spacing: 6) {
                 Image(systemName: icon)
-                    .font(.system(size: 22, weight: .light))
+                    .font(.system(size: 20, weight: .light))
                 Text(label)
                     .font(.system(size: 10, weight: .regular))
                     .tracking(1)
             }
             .foregroundColor(.white)
-            .frame(maxWidth: .infinity)
         }
     }
 
@@ -99,46 +91,47 @@ struct HomeView: View {
 
     private var eventsCarousel: some View {
         VStack(spacing: SP.spacing8) {
-            ZStack {
-                // Event cards
-                ForEach(Array(info.events.enumerated()), id: \.element.id) { index, event in
-                    if index == currentEventIndex {
-                        eventCard(event: event)
-                            .transition(.asymmetric(
-                                insertion: .move(edge: .trailing).combined(with: .opacity),
-                                removal: .move(edge: .leading).combined(with: .opacity)
-                            ))
+            // Arrow left — card — arrow right
+            HStack(spacing: 0) {
+                Button {
+                    withAnimation(.easeInOut(duration: 0.3)) {
+                        currentEventIndex = (currentEventIndex - 1 + info.events.count) % info.events.count
                     }
+                } label: {
+                    Image(systemName: "chevron.left")
+                        .font(.system(size: 14, weight: .light))
+                        .foregroundColor(.white.opacity(0.6))
+                        .frame(width: 44, height: 44)
+                        .contentShape(Rectangle())
                 }
 
-                // Arrow buttons
-                HStack {
-                    Button {
-                        withAnimation(.easeInOut(duration: 0.3)) {
-                            currentEventIndex = (currentEventIndex - 1 + info.events.count) % info.events.count
+                // Card
+                ZStack {
+                    ForEach(Array(info.events.enumerated()), id: \.element.id) { index, event in
+                        if index == currentEventIndex {
+                            eventCard(event: event)
+                                .transition(.asymmetric(
+                                    insertion: .move(edge: .trailing).combined(with: .opacity),
+                                    removal: .move(edge: .leading).combined(with: .opacity)
+                                ))
                         }
-                    } label: {
-                        Image(systemName: "chevron.left")
-                            .font(.system(size: 14, weight: .light))
-                            .foregroundColor(.white.opacity(0.6))
-                            .frame(width: 36, height: 36)
                     }
+                }
+                .frame(maxWidth: .infinity)
 
-                    Spacer()
-
-                    Button {
-                        withAnimation(.easeInOut(duration: 0.3)) {
-                            currentEventIndex = (currentEventIndex + 1) % info.events.count
-                        }
-                    } label: {
-                        Image(systemName: "chevron.right")
-                            .font(.system(size: 14, weight: .light))
-                            .foregroundColor(.white.opacity(0.6))
-                            .frame(width: 36, height: 36)
+                Button {
+                    withAnimation(.easeInOut(duration: 0.3)) {
+                        currentEventIndex = (currentEventIndex + 1) % info.events.count
                     }
+                } label: {
+                    Image(systemName: "chevron.right")
+                        .font(.system(size: 14, weight: .light))
+                        .foregroundColor(.white.opacity(0.6))
+                        .frame(width: 44, height: 44)
+                        .contentShape(Rectangle())
                 }
             }
-            .padding(.horizontal, SP.horizontalPadding)
+            .padding(.horizontal, SP.spacing8)
 
             // Event dots
             HStack(spacing: 6) {
@@ -169,9 +162,8 @@ struct HomeView: View {
                 .lineLimit(2)
                 .multilineTextAlignment(.center)
         }
-        .frame(maxWidth: .infinity)
-        .padding(.vertical, SP.spacing16)
-        .padding(.horizontal, SP.spacing40)
+        .padding(.vertical, SP.spacing12)
+        .padding(.horizontal, SP.spacing16)
     }
 }
 
