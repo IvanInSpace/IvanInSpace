@@ -1,7 +1,7 @@
 import SwiftUI
 
 // MARK: - Kitchen Menu View
-// 9 slides with circular swipe via TabView
+// Circular pager with 9 slides
 
 struct KitchenMenuView: View {
     @State private var currentSlide = 0
@@ -21,24 +21,33 @@ struct KitchenMenuView: View {
     var body: some View {
         NavigationStack {
             GeometryReader { geo in
-                TabView(selection: $currentSlide) {
-                    ForEach(0..<slides.count, id: \.self) { index in
-                        let (category, images, title) = slides[index]
-                        NavigationLink {
-                            KitchenCategoryDetailView(category: category)
-                        } label: {
-                            SlideCard(
-                                imageNames: images,
-                                title: title,
-                                size: geo.size,
-                                totalSlides: slides.count,
-                                slideIndex: index
-                            )
-                        }
-                        .tag(index)
+                ZStack {
+                    let (category, images, title) = slides[currentSlide]
+
+                    NavigationLink {
+                        KitchenCategoryDetailView(category: category)
+                    } label: {
+                        SlideCard(
+                            imageNames: images,
+                            title: title,
+                            size: geo.size,
+                            totalSlides: slides.count,
+                            slideIndex: currentSlide
+                        )
                     }
                 }
-                .tabViewStyle(.page(indexDisplayMode: .never))
+                .gesture(
+                    DragGesture(minimumDistance: 50)
+                        .onEnded { value in
+                            withAnimation(.easeInOut(duration: 0.3)) {
+                                if value.translation.width < 0 {
+                                    currentSlide = (currentSlide + 1) % slides.count
+                                } else {
+                                    currentSlide = (currentSlide - 1 + slides.count) % slides.count
+                                }
+                            }
+                        }
+                )
             }
             .background(Color.spDark)
             .ignoresSafeArea()
@@ -51,6 +60,7 @@ struct KitchenMenuView: View {
 
 struct KitchenCategoryDetailView: View {
     let category: MenuCategory
+    @Environment(\.dismiss) private var dismiss
 
     var body: some View {
         ScrollView {
@@ -75,8 +85,17 @@ struct KitchenCategoryDetailView: View {
             Spacer().frame(height: 90)
         }
         .background(Color.spDark)
-        .navigationTitle(category.name)
-        .navigationBarTitleDisplayMode(.inline)
+        .navigationBarBackButtonHidden(true)
+        .toolbar {
+            ToolbarItem(placement: .topBarLeading) {
+                BackButton { dismiss() }
+            }
+            ToolbarItem(placement: .principal) {
+                Text(category.name)
+                    .font(.spSubsection)
+                    .foregroundColor(.spCream)
+            }
+        }
         .toolbarColorScheme(.dark, for: .navigationBar)
     }
 }
