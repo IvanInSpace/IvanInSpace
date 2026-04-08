@@ -55,9 +55,8 @@ struct BarMenuView: View {
 
                     // Top row: "Все разделы" center + search right
                     VStack {
-                        HStack {
-                            Spacer()
-
+                        ZStack {
+                            // Centered: "Все разделы"
                             Button {
                                 withAnimation(.spring(response: 0.35, dampingFraction: 0.8)) {
                                     showSections.toggle()
@@ -73,20 +72,22 @@ struct BarMenuView: View {
                                 .foregroundColor(.white.opacity(0.7))
                             }
 
-                            Spacer()
-
-                            Button {
-                                withAnimation(.spring(response: 0.35, dampingFraction: 0.8)) {
-                                    showSearch.toggle()
-                                    if showSearch { showSections = false }
-                                    if !showSearch { searchQuery = "" }
+                            // Right: search
+                            HStack {
+                                Spacer()
+                                Button {
+                                    withAnimation(.spring(response: 0.35, dampingFraction: 0.8)) {
+                                        showSearch.toggle()
+                                        if showSearch { showSections = false }
+                                        if !showSearch { searchQuery = "" }
+                                    }
+                                } label: {
+                                    Image(systemName: "magnifyingglass")
+                                        .font(.system(size: 18, weight: .light))
+                                        .foregroundColor(.white.opacity(0.8))
                                 }
-                            } label: {
-                                Image(systemName: "magnifyingglass")
-                                    .font(.system(size: 18, weight: .light))
-                                    .foregroundColor(.white.opacity(0.8))
+                                .padding(.trailing, SP.horizontalPadding)
                             }
-                            .padding(.trailing, SP.horizontalPadding)
                         }
                         .padding(.top, geo.safeAreaInsets.top + geo.size.height * 0.12)
                         Spacer()

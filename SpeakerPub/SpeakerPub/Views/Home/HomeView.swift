@@ -7,14 +7,23 @@ struct HomeView: View {
     @State private var currentImageIndex = 0
     @State private var currentEventIndex = 0
     @State private var showProfile = false
+    @State private var colonVisible = true
     private let backgrounds = ["main1", "main2", "main3"]
     private let timer = Timer.publish(every: 4, on: .main, in: .common).autoconnect()
+    private let blinkTimer = Timer.publish(every: 1, on: .main, in: .common).autoconnect()
     private let info = BarInfo.shared
 
     var body: some View {
         GeometryReader { geo in
             ZStack {
                 backgroundLayer(size: geo.size)
+
+                // Top center: working hours
+                VStack {
+                    workingHoursBar
+                        .padding(.top, geo.safeAreaInsets.top + geo.size.height * 0.12)
+                    Spacer()
+                }
 
                 VStack(spacing: 0) {
                     Spacer()
@@ -29,6 +38,9 @@ struct HomeView: View {
             withAnimation(.easeInOut(duration: 1.0)) {
                 currentImageIndex = (currentImageIndex + 1) % backgrounds.count
             }
+        }
+        .onReceive(blinkTimer) { _ in
+            colonVisible.toggle()
         }
         .fullScreenCover(isPresented: $showProfile) {
             ProfileView()
@@ -58,6 +70,36 @@ struct HomeView: View {
                 endPoint: .bottom
             )
         }
+    }
+
+    // MARK: - Working Hours Bar
+
+    private var workingHoursBar: some View {
+        let status = info.currentStatus()
+        let time = status.isOpen ? status.closingTime : status.closingTime
+        let parts = time.split(separator: ":")
+        let hours = parts.count > 0 ? String(parts[0]) : "00"
+        let minutes = parts.count > 1 ? String(parts[1]) : "00"
+
+        return HStack(spacing: 0) {
+            Text(status.isOpen ? "сегодня работаем до " : "откроемся в ")
+                .font(.system(size: 13, weight: .regular))
+                .foregroundColor(.white.opacity(0.7))
+            Text(hours)
+                .font(.system(size: 13, weight: .medium))
+                .foregroundColor(.white.opacity(0.9))
+            Text(":")
+                .font(.system(size: 13, weight: .medium))
+                .foregroundColor(.white.opacity(colonVisible ? 0.9 : 0.0))
+            Text(minutes)
+                .font(.system(size: 13, weight: .medium))
+                .foregroundColor(.white.opacity(0.9))
+        }
+        .padding(.horizontal, SP.spacing16)
+        .padding(.vertical, SP.spacing6)
+        .background(Color.black.opacity(0.35))
+        .background(.ultraThinMaterial.opacity(0.4))
+        .clipShape(Capsule())
     }
 
     // MARK: - Navigation Icons (two rows)

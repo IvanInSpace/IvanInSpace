@@ -24,6 +24,45 @@ struct BarInfo {
         ("Вс", "12:00–00:00")
     ]
 
+    // Schedule: (weekday range, open hour, close hour next-day-adjusted)
+    private let schedule: [(days: ClosedRange<Int>, open: Int, close: Int)] = [
+        (2...5, 12, 24),   // Пн–Чт: 12–00
+        (6...7, 12, 29),   // Пт–Сб: 12–05 (29 = next day 05:00)
+        (1...1, 12, 24)    // Вс: 12–00
+    ]
+
+    func currentStatus() -> (isOpen: Bool, closingTime: String) {
+        let moscow = TimeZone(identifier: "Europe/Moscow")!
+        var calendar = Calendar(identifier: .gregorian)
+        calendar.timeZone = moscow
+        let now = Date()
+        let weekday = calendar.component(.weekday, from: now)
+        let hour = calendar.component(.hour, from: now)
+
+        for entry in schedule where entry.days.contains(weekday) {
+            let closeDisplay = entry.close > 24
+                ? String(format: "%02d:00", entry.close - 24)
+                : "00:00"
+            if entry.close > 24 {
+                if hour >= entry.open || hour < (entry.close - 24) {
+                    return (true, closeDisplay)
+                }
+            } else {
+                if hour >= entry.open { return (true, closeDisplay) }
+            }
+            return (false, String(format: "%02d:00", entry.open))
+        }
+        return (false, "12:00")
+    }
+
+    var yandexMapsURL: URL {
+        URL(string: "yandexmaps://maps.yandex.ru/?pt=\(coordinate.longitude),\(coordinate.latitude)&z=17&text=The+Speaker+Pub")!
+    }
+
+    var yandexMapsWebURL: URL {
+        URL(string: "https://yandex.ru/maps/?pt=\(coordinate.longitude),\(coordinate.latitude)&z=17&text=The+Speaker+Pub")!
+    }
+
     let aboutText = """
     Speaker Pub — камерный британский паб с авторским интерьером \
     и хорошей пивной подборкой.

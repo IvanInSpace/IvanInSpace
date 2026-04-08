@@ -235,7 +235,28 @@ struct AboutView: View {
             }
             .frame(height: 200)
             .clipShape(RoundedRectangle(cornerRadius: SP.radiusSmall))
-            .allowsHitTesting(false)
+
+            // Построить маршрут — Яндекс.Карты
+            Button {
+                let appURL = info.yandexMapsURL
+                if UIApplication.shared.canOpenURL(appURL) {
+                    UIApplication.shared.open(appURL)
+                } else {
+                    UIApplication.shared.open(info.yandexMapsWebURL)
+                }
+            } label: {
+                HStack(spacing: SP.spacing8) {
+                    Image(systemName: "location.fill")
+                        .font(.system(size: 13))
+                    Text("Построить маршрут")
+                        .font(.spBodyMedium)
+                }
+                .foregroundColor(.spGold)
+                .frame(maxWidth: .infinity)
+                .padding(.vertical, SP.spacing12)
+                .background(Color.spCard)
+                .clipShape(RoundedRectangle(cornerRadius: SP.radiusSmall))
+            }
 
             Button {
                 UIApplication.shared.open(info.phoneURL)
@@ -243,7 +264,7 @@ struct AboutView: View {
                 HStack(spacing: SP.spacing8) {
                     Image(systemName: "phone.fill")
                         .font(.system(size: 13))
-                    Text("Забронировать стол")
+                    Text("Забронировать переговорную")
                         .font(.spBodyMedium)
                 }
                 .foregroundColor(.spGold)
