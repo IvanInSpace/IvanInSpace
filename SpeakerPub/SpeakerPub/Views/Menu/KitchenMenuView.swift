@@ -50,9 +50,24 @@ struct KitchenMenuView: View {
                     .animation(.easeInOut(duration: 0.35), value: showSections)
                     .animation(.easeInOut(duration: 0.35), value: showSearch)
 
-                    // Top controls: sections toggle + search
+                    // Top-right search icon only
                     VStack {
-                        topControls(geo: geo)
+                        HStack {
+                            Spacer()
+                            Button {
+                                withAnimation(.spring(response: 0.35, dampingFraction: 0.8)) {
+                                    showSearch.toggle()
+                                    if showSearch { showSections = false }
+                                    if !showSearch { searchQuery = "" }
+                                }
+                            } label: {
+                                Image(systemName: "magnifyingglass")
+                                    .font(.system(size: 18, weight: .light))
+                                    .foregroundColor(.white.opacity(0.8))
+                            }
+                            .padding(.trailing, SP.horizontalPadding)
+                        }
+                        .padding(.top, geo.safeAreaInsets.top + geo.size.height * 0.12)
                         Spacer()
                     }
 
@@ -101,50 +116,6 @@ struct KitchenMenuView: View {
             }
             .toolbar(.hidden, for: .navigationBar)
         }
-    }
-
-    // MARK: - Top Controls
-
-    private func topControls(geo: GeometryProxy) -> some View {
-        HStack {
-            // "Все разделы" button
-            Button {
-                withAnimation(.spring(response: 0.35, dampingFraction: 0.8)) {
-                    showSections.toggle()
-                    if showSections { showSearch = false; searchQuery = "" }
-                }
-            } label: {
-                HStack(spacing: 6) {
-                    Image(systemName: showSections ? "chevron.up" : "chevron.down")
-                        .font(.system(size: 12, weight: .medium))
-                    Text("Все разделы")
-                        .font(.system(size: 13, weight: .regular))
-                }
-                .foregroundColor(.white.opacity(0.8))
-            }
-
-            Spacer()
-
-            // Search icon
-            Button {
-                withAnimation(.spring(response: 0.35, dampingFraction: 0.8)) {
-                    showSearch.toggle()
-                    if showSearch { showSections = false }
-                    if !showSearch { searchQuery = "" }
-                }
-            } label: {
-                VStack(spacing: 4) {
-                    Image(systemName: "magnifyingglass")
-                        .font(.system(size: 18, weight: .light))
-                    Text("Поиск")
-                        .font(.system(size: 9, weight: .regular))
-                        .tracking(0.5)
-                }
-                .foregroundColor(.white.opacity(0.8))
-            }
-        }
-        .padding(.horizontal, SP.horizontalPadding)
-        .padding(.top, geo.safeAreaInsets.top + geo.size.height * 0.12)
     }
 
     // MARK: - Section List
@@ -266,18 +237,41 @@ struct KitchenMenuView: View {
         VStack {
             Spacer()
 
-            VStack(spacing: SP.spacing12) {
+            VStack(spacing: SP.spacing20) {
+                // "Все разделы" toggle
+                Button {
+                    withAnimation(.spring(response: 0.35, dampingFraction: 0.8)) {
+                        showSections.toggle()
+                        if showSections { showSearch = false; searchQuery = "" }
+                    }
+                } label: {
+                    HStack(spacing: 6) {
+                        Text("Все разделы")
+                            .font(.system(size: 15, weight: .regular))
+                        Image(systemName: showSections ? "chevron.down" : "chevron.right")
+                            .font(.system(size: 11, weight: .medium))
+                    }
+                    .foregroundColor(.white.opacity(0.7))
+                }
+
+                // "Перейти в меню" with blur background
                 Text("Перейти в меню")
                     .font(.system(size: 12, weight: .regular))
                     .tracking(1)
-                    .foregroundColor(.white.opacity(0.5))
+                    .foregroundColor(.white.opacity(0.6))
+                    .padding(.horizontal, SP.spacing24)
+                    .padding(.vertical, SP.spacing8)
+                    .background(.ultraThinMaterial.opacity(0.6))
+                    .clipShape(Capsule())
 
+                // Category name
                 Text(slides[currentSlide].2)
                     .font(.spHero)
                     .tracking(2)
                     .foregroundColor(.white)
                     .shadow(color: .black.opacity(0.5), radius: 8, y: 4)
 
+                // Swipe arrows + dots
                 HStack(spacing: SP.spacing24) {
                     Image(systemName: "chevron.left")
                         .font(.system(size: 14, weight: .light))
@@ -296,7 +290,7 @@ struct KitchenMenuView: View {
                 }
             }
             .frame(maxWidth: .infinity)
-            .padding(.bottom, 80)
+            .padding(.bottom, 100)
         }
     }
 }
