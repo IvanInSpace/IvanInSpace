@@ -1,7 +1,6 @@
 import SwiftUI
 
 // MARK: - Bar Menu View
-// Circular pager with two slides
 
 struct BarMenuView: View {
     @State private var currentSlide = 0
@@ -15,35 +14,26 @@ struct BarMenuView: View {
     var body: some View {
         NavigationStack {
             GeometryReader { geo in
-                ZStack {
-                    // Current slide
-                    NavigationLink {
-                        DrinksCategoryListView(
-                            title: slideData[currentSlide].title,
-                            categories: currentSlide == 0 ? [MenuData.draughtBeer] : cocktailsAndSoftCategories
-                        )
-                    } label: {
-                        SlideCard(
-                            imageNames: slideData[currentSlide].images,
-                            title: slideData[currentSlide].title,
-                            size: geo.size,
-                            totalSlides: totalSlides,
-                            slideIndex: currentSlide
-                        )
+                TabView(selection: $currentSlide) {
+                    ForEach(0..<totalSlides, id: \.self) { index in
+                        NavigationLink {
+                            DrinksCategoryListView(
+                                title: slideData[index].title,
+                                categories: index == 0 ? [MenuData.draughtBeer] : cocktailsAndSoftCategories
+                            )
+                        } label: {
+                            SlideCard(
+                                imageNames: slideData[index].images,
+                                title: slideData[index].title,
+                                size: geo.size,
+                                totalSlides: totalSlides,
+                                slideIndex: index
+                            )
+                        }
+                        .tag(index)
                     }
                 }
-                .gesture(
-                    DragGesture(minimumDistance: 50)
-                        .onEnded { value in
-                            withAnimation(.easeInOut(duration: 0.3)) {
-                                if value.translation.width < 0 {
-                                    currentSlide = (currentSlide + 1) % totalSlides
-                                } else {
-                                    currentSlide = (currentSlide - 1 + totalSlides) % totalSlides
-                                }
-                            }
-                        }
-                )
+                .tabViewStyle(.page(indexDisplayMode: .never))
             }
             .background(Color.spDark)
             .ignoresSafeArea()
@@ -134,7 +124,6 @@ struct SlideCard: View {
 struct DrinksCategoryListView: View {
     let title: String
     let categories: [MenuCategory]
-    @Environment(\.dismiss) private var dismiss
 
     var body: some View {
         ScrollView {
@@ -149,17 +138,8 @@ struct DrinksCategoryListView: View {
             .padding(.bottom, 90)
         }
         .background(Color.spDark)
-        .navigationBarBackButtonHidden(true)
-        .toolbar {
-            ToolbarItem(placement: .topBarLeading) {
-                BackButton { dismiss() }
-            }
-            ToolbarItem(placement: .principal) {
-                Text(title)
-                    .font(.spSubsection)
-                    .foregroundColor(.spCream)
-            }
-        }
+        .navigationTitle(title)
+        .navigationBarTitleDisplayMode(.inline)
         .toolbarColorScheme(.dark, for: .navigationBar)
     }
 }
@@ -174,31 +154,6 @@ struct PriceDisclaimer: View {
             .multilineTextAlignment(.center)
             .padding(.horizontal, SP.spacing32)
             .padding(.top, SP.spacing8)
-    }
-}
-
-// MARK: - Back Button (matches CloseButton style)
-
-struct BackButton: View {
-    let action: () -> Void
-
-    var body: some View {
-        Button(action: action) {
-            VStack(spacing: 2) {
-                ZStack {
-                    Circle()
-                        .fill(Color.white.opacity(0.15))
-                        .frame(width: 32, height: 32)
-
-                    Image(systemName: "chevron.left")
-                        .font(.system(size: 12, weight: .medium))
-                        .foregroundColor(.white.opacity(0.8))
-                }
-                Text("назад")
-                    .font(.system(size: 9, weight: .regular))
-                    .foregroundColor(.white.opacity(0.5))
-            }
-        }
     }
 }
 
