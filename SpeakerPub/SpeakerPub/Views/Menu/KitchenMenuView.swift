@@ -1,20 +1,20 @@
 import SwiftUI
 
 // MARK: - Kitchen Menu View
-// Horizontal paging slider with 9 category cards (like Bar)
+// Horizontal paging slider, each slide has rotating background images
 
 struct KitchenMenuView: View {
-    // Each slide: (category, image asset name, display title)
-    private let slides: [(MenuCategory, String, String)] = [
-        (MenuData.coldStarters, "cold_starters", "Холодные закуски"),
-        (MenuData.hotStarters, "hot_starters", "Горячие закуски"),
-        (MenuData.salads, "salads", "Салаты"),
-        (MenuData.soups, "soups", "Супы"),
-        (MenuData.burgerAndMore, "burgers", "Бургеры"),
-        (MenuData.sandwiches, "sandwiches", "Сэндвичи"),
-        (MenuData.hotDishes, "hot_dishes", "Горячие блюда"),
-        (MenuData.englishPies, "english_pies", "Английские пироги"),
-        (MenuData.desserts, "desserts", "Десерты")
+    // Each slide: (category, image names array, display title)
+    private let slides: [(MenuCategory, [String], String)] = [
+        (MenuData.coldStarters, ["cold_starters_1", "cold_starters_2", "cold_starters_3"], "Холодные закуски"),
+        (MenuData.hotStarters, ["hot_starters_1", "hot_starters_2", "hot_starters_3"], "Горячие закуски"),
+        (MenuData.salads, ["salads_1", "salads_2", "salads_3"], "Салаты"),
+        (MenuData.soups, ["soups_1", "soups_2", "soups_3"], "Супы"),
+        (MenuData.burgerAndMore, ["burgers_1", "burgers_2", "burgers_3"], "Бургеры"),
+        (MenuData.sandwiches, ["sandwiches_1", "sandwiches_2", "sandwiches_3"], "Сэндвичи"),
+        (MenuData.hotDishes, ["hot_dishes_1", "hot_dishes_2", "hot_dishes_3"], "Горячие блюда"),
+        (MenuData.englishPies, ["english_pies_1", "english_pies_2", "english_pies_3"], "Английские пироги"),
+        (MenuData.desserts, ["desserts_1", "desserts_2", "desserts_3"], "Десерты")
     ]
 
     var body: some View {
@@ -23,16 +23,16 @@ struct KitchenMenuView: View {
                 ScrollView(.horizontal, showsIndicators: false) {
                     LazyHStack(spacing: 0) {
                         ForEach(0..<slides.count, id: \.self) { index in
-                            let (category, image, title) = slides[index]
+                            let (category, images, title) = slides[index]
                             NavigationLink {
                                 KitchenCategoryDetailView(category: category)
                             } label: {
                                 KitchenHeroCard(
-                                    imageName: image,
+                                    imageNames: images,
                                     title: title,
                                     size: geo.size,
                                     totalSlides: slides.count,
-                                    currentIndex: index
+                                    slideIndex: index
                                 )
                             }
                         }
@@ -48,22 +48,29 @@ struct KitchenMenuView: View {
     }
 }
 
-// MARK: - Kitchen Hero Card
+// MARK: - Kitchen Hero Card (rotating backgrounds)
 
 struct KitchenHeroCard: View {
-    let imageName: String
+    let imageNames: [String]
     let title: String
     let size: CGSize
     let totalSlides: Int
-    let currentIndex: Int
+    let slideIndex: Int
+
+    @State private var currentImageIndex = 0
+    private let timer = Timer.publish(every: 3, on: .main, in: .common).autoconnect()
 
     var body: some View {
         ZStack {
-            Image(imageName)
-                .resizable()
-                .aspectRatio(contentMode: .fill)
-                .frame(width: size.width, height: size.height)
-                .clipped()
+            // Rotating backgrounds
+            ForEach(0..<imageNames.count, id: \.self) { index in
+                Image(imageNames[index])
+                    .resizable()
+                    .aspectRatio(contentMode: .fill)
+                    .frame(width: size.width, height: size.height)
+                    .clipped()
+                    .opacity(index == currentImageIndex ? 1 : 0)
+            }
 
             Color.black.opacity(0.45)
 
@@ -90,7 +97,7 @@ struct KitchenHeroCard: View {
                 HStack(spacing: 4) {
                     ForEach(0..<totalSlides, id: \.self) { i in
                         Circle()
-                            .fill(i == currentIndex ? Color.white : Color.white.opacity(0.3))
+                            .fill(i == slideIndex ? Color.white : Color.white.opacity(0.3))
                             .frame(width: 5, height: 5)
                     }
                 }
@@ -100,6 +107,12 @@ struct KitchenHeroCard: View {
             }
         }
         .frame(width: size.width, height: size.height)
+        .onReceive(timer) { _ in
+            guard imageNames.count > 1 else { return }
+            withAnimation(.easeInOut(duration: 0.8)) {
+                currentImageIndex = (currentImageIndex + 1) % imageNames.count
+            }
+        }
     }
 }
 
