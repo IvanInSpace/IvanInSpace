@@ -231,14 +231,12 @@ struct AboutView: View {
             .allowsHitTesting(false)
 
             Button {
-                let mapItem = MKMapItem(placemark: MKPlacemark(coordinate: info.coordinate))
-                mapItem.name = info.name
-                mapItem.openInMaps()
+                UIApplication.shared.open(info.phoneURL)
             } label: {
                 HStack(spacing: SP.spacing8) {
-                    Image(systemName: "arrow.triangle.turn.up.right.diamond")
+                    Image(systemName: "phone.fill")
                         .font(.system(size: 13))
-                    Text("Построить маршрут")
+                    Text("Забронировать стол")
                         .font(.spBodyMedium)
                 }
                 .foregroundColor(.spGold)

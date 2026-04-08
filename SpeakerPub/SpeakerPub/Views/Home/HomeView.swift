@@ -11,23 +11,25 @@ struct HomeView: View {
     private let info = BarInfo.shared
 
     var body: some View {
-        ZStack {
-            backgroundLayer
+        GeometryReader { geo in
+            ZStack {
+                backgroundLayer(size: geo.size)
 
-            VStack {
-                Spacer()
-                navIcons
-                eventsCarousel
+                VStack {
+                    Spacer()
+                    navIcons
+                    eventsCarousel
 
-                // Background page dots
-                HStack(spacing: 6) {
-                    ForEach(0..<backgrounds.count, id: \.self) { index in
-                        Circle()
-                            .fill(index == currentImageIndex ? Color.white : Color.white.opacity(0.3))
-                            .frame(width: 5, height: 5)
+                    // Background page dots
+                    HStack(spacing: 6) {
+                        ForEach(0..<backgrounds.count, id: \.self) { index in
+                            Circle()
+                                .fill(index == currentImageIndex ? Color.white : Color.white.opacity(0.3))
+                                .frame(width: 5, height: 5)
+                        }
                     }
+                    .padding(.bottom, SP.spacing16)
                 }
-                .padding(.bottom, SP.spacing16)
             }
         }
         .ignoresSafeArea()
@@ -38,14 +40,16 @@ struct HomeView: View {
         }
     }
 
-    // MARK: - Background
+    // MARK: - Background (centered)
 
-    private var backgroundLayer: some View {
+    private func backgroundLayer(size: CGSize) -> some View {
         ZStack {
             ForEach(0..<backgrounds.count, id: \.self) { index in
                 Image(backgrounds[index])
                     .resizable()
                     .aspectRatio(contentMode: .fill)
+                    .frame(width: size.width, height: size.height)
+                    .clipped()
                     .opacity(index == currentImageIndex ? 1 : 0)
             }
 
@@ -87,51 +91,44 @@ struct HomeView: View {
         }
     }
 
-    // MARK: - Events Carousel
+    // MARK: - Events Carousel (swipeable)
 
     private var eventsCarousel: some View {
         VStack(spacing: SP.spacing8) {
-            // Arrow left — card — arrow right
             HStack(spacing: 0) {
+                // Left arrow
                 Button {
                     withAnimation(.easeInOut(duration: 0.3)) {
                         currentEventIndex = (currentEventIndex - 1 + info.events.count) % info.events.count
                     }
                 } label: {
                     Image(systemName: "chevron.left")
-                        .font(.system(size: 14, weight: .light))
+                        .font(.system(size: 16, weight: .regular))
                         .foregroundColor(.white.opacity(0.6))
-                        .frame(width: 44, height: 44)
+                        .frame(width: 44, height: 60)
                         .contentShape(Rectangle())
                 }
+                .buttonStyle(.plain)
 
-                // Card
-                ZStack {
-                    ForEach(Array(info.events.enumerated()), id: \.element.id) { index, event in
-                        if index == currentEventIndex {
-                            eventCard(event: event)
-                                .transition(.asymmetric(
-                                    insertion: .move(edge: .trailing).combined(with: .opacity),
-                                    removal: .move(edge: .leading).combined(with: .opacity)
-                                ))
-                        }
-                    }
-                }
-                .frame(maxWidth: .infinity)
+                // Card area with swipe gesture
+                eventCardArea
+                    .frame(maxWidth: .infinity)
 
+                // Right arrow
                 Button {
                     withAnimation(.easeInOut(duration: 0.3)) {
                         currentEventIndex = (currentEventIndex + 1) % info.events.count
                     }
                 } label: {
                     Image(systemName: "chevron.right")
-                        .font(.system(size: 14, weight: .light))
+                        .font(.system(size: 16, weight: .regular))
                         .foregroundColor(.white.opacity(0.6))
-                        .frame(width: 44, height: 44)
+                        .frame(width: 44, height: 60)
                         .contentShape(Rectangle())
                 }
+                .buttonStyle(.plain)
             }
-            .padding(.horizontal, SP.spacing8)
+            .padding(.horizontal, SP.spacing4)
 
             // Event dots
             HStack(spacing: 6) {
@@ -145,25 +142,44 @@ struct HomeView: View {
         .padding(.bottom, SP.spacing12)
     }
 
-    private func eventCard(event: BarEvent) -> some View {
-        VStack(spacing: SP.spacing6) {
-            Text(event.day.uppercased())
-                .font(.spSmall)
-                .tracking(1)
-                .foregroundColor(.spGold)
+    private var eventCardArea: some View {
+        ZStack {
+            ForEach(Array(info.events.enumerated()), id: \.element.id) { index, event in
+                if index == currentEventIndex {
+                    VStack(spacing: SP.spacing6) {
+                        Text(event.day.uppercased())
+                            .font(.spSmall)
+                            .tracking(1)
+                            .foregroundColor(.spGold)
 
-            Text(event.title)
-                .font(.spBodyMedium)
-                .foregroundColor(.white)
+                        Text(event.title)
+                            .font(.spBodyMedium)
+                            .foregroundColor(.white)
 
-            Text(event.description)
-                .font(.spCaption)
-                .foregroundColor(.white.opacity(0.6))
-                .lineLimit(2)
-                .multilineTextAlignment(.center)
+                        Text(event.description)
+                            .font(.spCaption)
+                            .foregroundColor(.white.opacity(0.6))
+                            .lineLimit(2)
+                            .multilineTextAlignment(.center)
+                    }
+                    .padding(.vertical, SP.spacing12)
+                    .padding(.horizontal, SP.spacing8)
+                    .transition(.opacity)
+                }
+            }
         }
-        .padding(.vertical, SP.spacing12)
-        .padding(.horizontal, SP.spacing16)
+        .gesture(
+            DragGesture(minimumDistance: 30)
+                .onEnded { value in
+                    withAnimation(.easeInOut(duration: 0.3)) {
+                        if value.translation.width < 0 {
+                            currentEventIndex = (currentEventIndex + 1) % info.events.count
+                        } else {
+                            currentEventIndex = (currentEventIndex - 1 + info.events.count) % info.events.count
+                        }
+                    }
+                }
+        )
     }
 }
 

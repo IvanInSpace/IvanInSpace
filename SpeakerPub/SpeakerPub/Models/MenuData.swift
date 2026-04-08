@@ -67,15 +67,15 @@ enum MenuData {
             MenuItem(name: "Fuller's ESB", description: "Английский биттер", prices: [PriceOption(amount: 900, label: "568 мл"), PriceOption(amount: 500, label: "280 мл")], tags: []),
             MenuItem(name: "Kilkenny", description: "Ирландский красный эль", prices: [PriceOption(amount: 900, label: "568 мл"), PriceOption(amount: 500, label: "280 мл")], tags: []),
             MenuItem(name: "Old Speckled Hen", description: "Английский пейл эль", prices: [PriceOption(amount: 850, label: "568 мл"), PriceOption(amount: 450, label: "280 мл")], tags: []),
-            MenuItem(name: "Level Head", description: nil, prices: [PriceOption(amount: 850, label: "568 мл"), PriceOption(amount: 450, label: "280 мл")], tags: []),
+            MenuItem(name: "Level Head", description: "Американский IPA", prices: [PriceOption(amount: 850, label: "568 мл"), PriceOption(amount: 450, label: "280 мл")], tags: []),
             MenuItem(name: "Maestro Nitro Lager", description: "Нитро лагер", prices: [PriceOption(amount: 750, label: "568 мл"), PriceOption(amount: 400, label: "280 мл")], tags: []),
             MenuItem(name: "Blanche de Brabant", description: "Бельгийское пшеничное", prices: [PriceOption(amount: 800, label: "568 мл"), PriceOption(amount: 450, label: "280 мл")], tags: []),
             MenuItem(name: "Queen Grace Cask Ale", description: "Каск эль", prices: [PriceOption(amount: 600, label: "568 мл"), PriceOption(amount: 350, label: "280 мл")], tags: [.caskAle]),
             MenuItem(name: "Speaker Golden Cask Ale", description: "Фирменный каск эль", prices: [PriceOption(amount: 600, label: "568 мл"), PriceOption(amount: 350, label: "280 мл")], tags: [.caskAle, .houseFavorite]),
             MenuItem(name: "Cider Magners", description: "Ирландский сидр", prices: [PriceOption(amount: 850, label: "568 мл"), PriceOption(amount: 450, label: "280 мл")], tags: []),
             MenuItem(name: "Безалкогольное пиво", description: nil, prices: [PriceOption(amount: 600, label: "568 мл"), PriceOption(amount: 350, label: "280 мл")], tags: [.nonAlcoholic]),
-            MenuItem(name: "Velka Morava", description: nil, prices: [PriceOption(amount: 550, label: "568 мл"), PriceOption(amount: 300, label: "280 мл")], tags: []),
-            MenuItem(name: "Nisko", description: nil, prices: [PriceOption(amount: 650, label: "568 мл"), PriceOption(amount: 350, label: "280 мл")], tags: []),
+            MenuItem(name: "Velka Morava", description: "Чешский солод", prices: [PriceOption(amount: 550, label: "568 мл"), PriceOption(amount: 300, label: "280 мл")], tags: []),
+            MenuItem(name: "Nisko", description: "Светлый лагер", prices: [PriceOption(amount: 650, label: "568 мл"), PriceOption(amount: 350, label: "280 мл")], tags: []),
             MenuItem(name: "Guest Cask Ale", description: "Гостевой каск эль — спрашивайте у бармена", prices: [], tags: [.caskAle])
         ]
     )
@@ -342,7 +342,7 @@ enum MenuData {
     )
 
     static let burgerAndMore = MenuCategory(
-        name: "Бургер и не только",
+        name: "Бургеры",
         volumeInfo: nil,
         items: [
             MenuItem(name: "Бургер с говядиной", description: nil, prices: [PriceOption(amount: 900, label: nil)], tags: [.popular]),
