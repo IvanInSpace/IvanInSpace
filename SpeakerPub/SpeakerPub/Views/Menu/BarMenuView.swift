@@ -1,35 +1,48 @@
 import SwiftUI
 
 // MARK: - Bar Menu View
-// Horizontal paging slider with two hero cards
+// Two slides with circular swipe via TabView
 
 struct BarMenuView: View {
+    @State private var currentSlide = 0
+    private let totalSlides = 2
+
+    private let slideData: [(title: String, images: [String])] = [
+        ("Cask & Keg", ["draft_1", "draft_2", "draft_3"]),
+        ("Cocktails & Soft", ["cocktails_1", "cocktails_2", "cocktails_3"])
+    ]
+
     var body: some View {
         NavigationStack {
             GeometryReader { geo in
-                ScrollView(.horizontal, showsIndicators: false) {
-                    LazyHStack(spacing: 0) {
+                TabView(selection: $currentSlide) {
+                    ForEach(0..<totalSlides, id: \.self) { index in
                         NavigationLink {
                             DrinksCategoryListView(
-                                title: "Cask & Keg",
-                                categories: [MenuData.draughtBeer]
+                                title: slideData[index].title,
+                                categories: index == 0 ? [MenuData.draughtBeer] : cocktailsAndSoftCategories
                             )
                         } label: {
-                            BarHeroCard(imageNames: ["draft_1", "draft_2", "draft_3"], title: "Cask & Keg", size: geo.size)
-                        }
-
-                        NavigationLink {
-                            DrinksCategoryListView(
-                                title: "Cocktails & Soft",
-                                categories: cocktailsAndSoftCategories
+                            SlideCard(
+                                imageNames: slideData[index].images,
+                                title: slideData[index].title,
+                                size: geo.size,
+                                totalSlides: totalSlides,
+                                slideIndex: index
                             )
-                        } label: {
-                            BarHeroCard(imageNames: ["cocktails_1", "cocktails_2", "cocktails_3"], title: "Cocktails & Soft", size: geo.size)
                         }
+                        .tag(index)
                     }
-                    .scrollTargetLayout()
                 }
-                .scrollTargetBehavior(.paging)
+                .tabViewStyle(.page(indexDisplayMode: .never))
+                .onChange(of: currentSlide) { _, newValue in
+                    // Circular: wrap around
+                    if newValue < 0 {
+                        currentSlide = totalSlides - 1
+                    } else if newValue >= totalSlides {
+                        currentSlide = 0
+                    }
+                }
             }
             .background(Color.spDark)
             .ignoresSafeArea()
@@ -43,12 +56,14 @@ struct BarMenuView: View {
     }
 }
 
-// MARK: - Bar Hero Card (supports rotating backgrounds)
+// MARK: - Shared Slide Card (used by Bar and Kitchen)
 
-struct BarHeroCard: View {
+struct SlideCard: View {
     let imageNames: [String]
     let title: String
     let size: CGSize
+    let totalSlides: Int
+    let slideIndex: Int
 
     @State private var currentImageIndex = 0
     private let timer = Timer.publish(every: 3, on: .main, in: .common).autoconnect()
@@ -91,7 +106,17 @@ struct BarHeroCard: View {
                 }
                 .padding(.top, SP.spacing12)
 
-                Spacer().frame(height: 160)
+                // Slide dots
+                HStack(spacing: 4) {
+                    ForEach(0..<totalSlides, id: \.self) { i in
+                        Circle()
+                            .fill(i == slideIndex ? Color.white : Color.white.opacity(0.3))
+                            .frame(width: 5, height: 5)
+                    }
+                }
+                .padding(.top, SP.spacing12)
+
+                Spacer().frame(height: 120)
             }
         }
         .frame(width: size.width, height: size.height)

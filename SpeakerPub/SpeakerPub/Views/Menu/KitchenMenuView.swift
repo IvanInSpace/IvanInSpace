@@ -1,10 +1,11 @@
 import SwiftUI
 
 // MARK: - Kitchen Menu View
-// Horizontal paging slider, each slide has rotating background images
+// 9 slides with circular swipe via TabView
 
 struct KitchenMenuView: View {
-    // Each slide: (category, image names array, display title)
+    @State private var currentSlide = 0
+
     private let slides: [(MenuCategory, [String], String)] = [
         (MenuData.coldStarters, ["cold_starters_1", "cold_starters_2", "cold_starters_3"], "Холодные закуски"),
         (MenuData.hotStarters, ["hot_starters_1", "hot_starters_2", "hot_starters_3"], "Горячие закуски"),
@@ -20,104 +21,28 @@ struct KitchenMenuView: View {
     var body: some View {
         NavigationStack {
             GeometryReader { geo in
-                ScrollView(.horizontal, showsIndicators: false) {
-                    LazyHStack(spacing: 0) {
-                        ForEach(0..<slides.count, id: \.self) { index in
-                            let (category, images, title) = slides[index]
-                            NavigationLink {
-                                KitchenCategoryDetailView(category: category)
-                            } label: {
-                                KitchenHeroCard(
-                                    imageNames: images,
-                                    title: title,
-                                    size: geo.size,
-                                    totalSlides: slides.count,
-                                    slideIndex: index
-                                )
-                            }
+                TabView(selection: $currentSlide) {
+                    ForEach(0..<slides.count, id: \.self) { index in
+                        let (category, images, title) = slides[index]
+                        NavigationLink {
+                            KitchenCategoryDetailView(category: category)
+                        } label: {
+                            SlideCard(
+                                imageNames: images,
+                                title: title,
+                                size: geo.size,
+                                totalSlides: slides.count,
+                                slideIndex: index
+                            )
                         }
+                        .tag(index)
                     }
-                    .scrollTargetLayout()
                 }
-                .scrollTargetBehavior(.paging)
+                .tabViewStyle(.page(indexDisplayMode: .never))
             }
             .background(Color.spDark)
             .ignoresSafeArea()
             .navigationBarHidden(true)
-        }
-    }
-}
-
-// MARK: - Kitchen Hero Card (rotating backgrounds)
-
-struct KitchenHeroCard: View {
-    let imageNames: [String]
-    let title: String
-    let size: CGSize
-    let totalSlides: Int
-    let slideIndex: Int
-
-    @State private var currentImageIndex = 0
-    private let timer = Timer.publish(every: 3, on: .main, in: .common).autoconnect()
-
-    var body: some View {
-        ZStack {
-            // Rotating backgrounds
-            ForEach(0..<imageNames.count, id: \.self) { index in
-                Image(imageNames[index])
-                    .resizable()
-                    .aspectRatio(contentMode: .fill)
-                    .frame(width: size.width, height: size.height)
-                    .clipped()
-                    .opacity(index == currentImageIndex ? 1 : 0)
-            }
-
-            Color.black.opacity(0.45)
-
-            VStack {
-                Spacer()
-
-                Text("Перейти в меню")
-                    .font(.system(size: 12, weight: .regular))
-                    .tracking(1)
-                    .foregroundColor(.white.opacity(0.6))
-                    .padding(.bottom, SP.spacing8)
-
-                Text(title)
-                    .font(.spHero)
-                    .tracking(2)
-                    .foregroundColor(.white)
-                    .shadow(color: .black.opacity(0.5), radius: 8, y: 4)
-
-                HStack(spacing: SP.spacing24) {
-                    Image(systemName: "chevron.left")
-                        .font(.system(size: 14, weight: .light))
-                        .foregroundColor(.white.opacity(0.5))
-                    Image(systemName: "chevron.right")
-                        .font(.system(size: 14, weight: .light))
-                        .foregroundColor(.white.opacity(0.5))
-                }
-                .padding(.top, SP.spacing12)
-
-                // Slide dots
-                HStack(spacing: 4) {
-                    ForEach(0..<totalSlides, id: \.self) { i in
-                        Circle()
-                            .fill(i == slideIndex ? Color.white : Color.white.opacity(0.3))
-                            .frame(width: 5, height: 5)
-                    }
-                }
-                .padding(.top, SP.spacing12)
-
-                Spacer().frame(height: 100)
-            }
-        }
-        .frame(width: size.width, height: size.height)
-        .onReceive(timer) { _ in
-            guard imageNames.count > 1 else { return }
-            withAnimation(.easeInOut(duration: 0.8)) {
-                currentImageIndex = (currentImageIndex + 1) % imageNames.count
-            }
         }
     }
 }

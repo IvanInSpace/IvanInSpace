@@ -16,7 +16,7 @@ struct HomeView: View {
             ZStack {
                 backgroundLayer(size: geo.size)
 
-                VStack {
+                VStack(spacing: 0) {
                     Spacer()
                     navIcons
                     eventsCarousel
@@ -60,11 +60,11 @@ struct HomeView: View {
         }
     }
 
-    // MARK: - Navigation Icons (Profile above Кухня)
+    // MARK: - Navigation Icons
 
     private var navIcons: some View {
         VStack(spacing: 20) {
-            // Profile — centered above the row
+            // Profile — full width centered
             Button {
                 showProfile = true
             } label: {
@@ -76,14 +76,16 @@ struct HomeView: View {
                         .tracking(1)
                 }
                 .foregroundColor(.white)
+                .frame(maxWidth: .infinity)
             }
 
             // Main nav row
-            HStack(spacing: 36) {
+            HStack(spacing: 0) {
                 navButton(icon: "wineglass", label: "Бар", tab: 1)
                 navButton(icon: "fork.knife", label: "Кухня", tab: 2)
                 navButton(icon: "info.circle", label: "О нас", tab: 3)
             }
+            .padding(.horizontal, SP.spacing48)
         }
         .padding(.bottom, SP.spacing24)
     }
@@ -100,6 +102,7 @@ struct HomeView: View {
                     .tracking(1)
             }
             .foregroundColor(.white)
+            .frame(maxWidth: .infinity)
         }
     }
 

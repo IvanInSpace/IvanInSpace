@@ -113,25 +113,23 @@ struct AboutView: View {
                     .clipShape(RoundedRectangle(cornerRadius: 8))
                     .id(current)
                     .transition(.opacity)
-                    .onTapGesture {
-                        withAnimation(.easeInOut(duration: 0.25)) {
-                            expandedPhoto = nil
-                        }
-                    }
                     .gesture(
                         DragGesture(minimumDistance: 40)
                             .onEnded { value in
                                 withAnimation(.easeInOut(duration: 0.25)) {
                                     if value.translation.width < 0 {
-                                        // Swipe left → next (circular)
                                         expandedPhoto = current % photoCount + 1
                                     } else {
-                                        // Swipe right → previous (circular)
                                         expandedPhoto = (current - 2 + photoCount) % photoCount + 1
                                     }
                                 }
                             }
                     )
+            }
+        }
+        .onTapGesture {
+            withAnimation(.easeInOut(duration: 0.25)) {
+                expandedPhoto = nil
             }
         }
     }

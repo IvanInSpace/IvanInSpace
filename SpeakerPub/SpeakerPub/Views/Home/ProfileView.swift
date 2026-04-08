@@ -7,7 +7,14 @@ struct ProfileView: View {
 
     var body: some View {
         ZStack {
-            Color.spDark.ignoresSafeArea()
+            // Background image
+            Image("profile_bg")
+                .resizable()
+                .aspectRatio(contentMode: .fill)
+                .ignoresSafeArea()
+
+            Color.black.opacity(0.65)
+                .ignoresSafeArea()
 
             VStack(spacing: SP.spacing24) {
                 Spacer()
