@@ -50,10 +50,28 @@ struct KitchenMenuView: View {
                     .animation(.easeInOut(duration: 0.35), value: showSections)
                     .animation(.easeInOut(duration: 0.35), value: showSearch)
 
-                    // Top-right search icon only
+                    // Top row: "Все разделы" center + search right
                     VStack {
                         HStack {
                             Spacer()
+
+                            Button {
+                                withAnimation(.spring(response: 0.35, dampingFraction: 0.8)) {
+                                    showSections.toggle()
+                                    if showSections { showSearch = false; searchQuery = "" }
+                                }
+                            } label: {
+                                HStack(spacing: 6) {
+                                    Text("Все разделы")
+                                        .font(.system(size: 15, weight: .regular))
+                                    Image(systemName: showSections ? "chevron.down" : "chevron.right")
+                                        .font(.system(size: 11, weight: .medium))
+                                }
+                                .foregroundColor(.white.opacity(0.7))
+                            }
+
+                            Spacer()
+
                             Button {
                                 withAnimation(.spring(response: 0.35, dampingFraction: 0.8)) {
                                     showSearch.toggle()
@@ -236,22 +254,6 @@ struct KitchenMenuView: View {
             Spacer()
 
             VStack(spacing: SP.spacing12) {
-                // "Все разделы" toggle
-                Button {
-                    withAnimation(.spring(response: 0.35, dampingFraction: 0.8)) {
-                        showSections.toggle()
-                        if showSections { showSearch = false; searchQuery = "" }
-                    }
-                } label: {
-                    HStack(spacing: 6) {
-                        Text("Все разделы")
-                            .font(.system(size: 15, weight: .regular))
-                        Image(systemName: showSections ? "chevron.down" : "chevron.right")
-                            .font(.system(size: 11, weight: .medium))
-                    }
-                    .foregroundColor(.white.opacity(0.7))
-                }
-
                 // "Перейти в меню" with blur background
                 Text("Перейти в меню")
                     .font(.system(size: 12, weight: .medium))
@@ -281,7 +283,7 @@ struct KitchenMenuView: View {
                 }
             }
             .frame(maxWidth: .infinity)
-            .padding(.bottom, 85)
+            .padding(.bottom, 92)
         }
     }
 }
