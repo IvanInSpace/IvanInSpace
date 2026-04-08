@@ -69,7 +69,10 @@ struct KitchenCategoryDetailView: View {
             .clipShape(RoundedRectangle(cornerRadius: SP.radiusSmall))
             .padding(.horizontal, SP.horizontalPadding)
             .padding(.top, SP.spacing16)
-            .padding(.bottom, 90)
+
+            PriceDisclaimer()
+
+            Spacer().frame(height: 90)
         }
         .background(Color.spDark)
         .navigationTitle(category.name)

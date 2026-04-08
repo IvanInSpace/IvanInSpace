@@ -141,6 +141,8 @@ struct DrinksCategoryListView: View {
                 ForEach(categories) { category in
                     CategoryBlock(category: category)
                 }
+
+                PriceDisclaimer()
             }
             .padding(.vertical, SP.spacing16)
             .padding(.bottom, 90)
@@ -149,6 +151,19 @@ struct DrinksCategoryListView: View {
         .navigationTitle(title)
         .navigationBarTitleDisplayMode(.inline)
         .toolbarColorScheme(.dark, for: .navigationBar)
+    }
+}
+
+// MARK: - Price Disclaimer
+
+struct PriceDisclaimer: View {
+    var body: some View {
+        Text("Цены в приложении могут отличаться от цен в заведении, уточняйте итоговую стоимость у сотрудников")
+            .font(.spCaption)
+            .foregroundColor(.spMuted)
+            .multilineTextAlignment(.center)
+            .padding(.horizontal, SP.spacing32)
+            .padding(.top, SP.spacing8)
     }
 }
 
