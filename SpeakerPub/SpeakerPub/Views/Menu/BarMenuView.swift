@@ -1,11 +1,13 @@
 import SwiftUI
 
 // MARK: - Bar Menu View
-// Custom circular pager — no TabView
 
 struct BarMenuView: View {
     @State private var currentSlide = 0
     @State private var selectedCategory: Int? = nil
+    @State private var showSections = false
+    @State private var showSearch = false
+    @State private var searchQuery = ""
     private let totalSlides = 2
 
     private let slideData: [(title: String, images: [String])] = [
@@ -19,24 +21,80 @@ struct BarMenuView: View {
         return [[MenuData.draughtBeer], cocktailsCats]
     }
 
+    private var allBarItems: [MenuItem] {
+        MenuData.barSection.categories.flatMap(\.items)
+    }
+
+    private var searchResults: [MenuItem] {
+        guard !searchQuery.isEmpty else { return [] }
+        let q = searchQuery.lowercased()
+        return allBarItems.filter { $0.name.lowercased().contains(q) }
+    }
+
     var body: some View {
         NavigationStack {
-            ZStack {
-                // Full-screen slide
-                SlideCard(
-                    imageNames: slideData[currentSlide].images,
-                    title: slideData[currentSlide].title,
-                    totalSlides: totalSlides,
-                    slideIndex: currentSlide
-                )
-                .id(currentSlide)
-                .transition(.opacity)
+            GeometryReader { geo in
+                ZStack {
+                    // Background slide
+                    SlideCard(
+                        imageNames: slideData[currentSlide].images,
+                        title: "",
+                        totalSlides: totalSlides,
+                        slideIndex: currentSlide,
+                        showOverlayUI: false
+                    )
+                    .id(currentSlide)
+                    .blur(radius: (showSections || showSearch) ? 8 : 0)
+                    .animation(.easeInOut(duration: 0.35), value: showSections)
+                    .animation(.easeInOut(duration: 0.35), value: showSearch)
+
+                    // Dark overlay
+                    Color.black.opacity((showSections || showSearch) ? 0.7 : 0.5)
+                        .animation(.easeInOut(duration: 0.35), value: showSections)
+                        .animation(.easeInOut(duration: 0.35), value: showSearch)
+
+                    // Top-right search icon
+                    VStack {
+                        HStack {
+                            Spacer()
+                            Button {
+                                withAnimation(.spring(response: 0.35, dampingFraction: 0.8)) {
+                                    showSearch.toggle()
+                                    if showSearch { showSections = false }
+                                    if !showSearch { searchQuery = "" }
+                                }
+                            } label: {
+                                Image(systemName: "magnifyingglass")
+                                    .font(.system(size: 18, weight: .light))
+                                    .foregroundColor(.white.opacity(0.8))
+                            }
+                            .padding(.trailing, SP.horizontalPadding)
+                        }
+                        .padding(.top, geo.safeAreaInsets.top + geo.size.height * 0.12)
+                        Spacer()
+                    }
+
+                    // Section list
+                    if showSections {
+                        sectionList(geo: geo)
+                    }
+
+                    // Search overlay
+                    if showSearch {
+                        searchOverlay(geo: geo)
+                    }
+
+                    // Bottom UI
+                    if !showSections && !showSearch {
+                        bottomUI
+                    }
+                }
             }
             .ignoresSafeArea()
             .gesture(
                 DragGesture(minimumDistance: 50, coordinateSpace: .local)
                     .onEnded { value in
-                        // Only horizontal swipes (ignore vertical)
+                        guard !showSections && !showSearch else { return }
                         guard abs(value.translation.width) > abs(value.translation.height) else { return }
                         withAnimation(.easeInOut(duration: 0.3)) {
                             if value.translation.width < 0 {
@@ -48,7 +106,13 @@ struct BarMenuView: View {
                     }
             )
             .onTapGesture {
-                selectedCategory = currentSlide
+                if showSections {
+                    withAnimation(.easeInOut(duration: 0.25)) { showSections = false }
+                } else if showSearch {
+                    withAnimation(.easeInOut(duration: 0.25)) { showSearch = false; searchQuery = "" }
+                } else {
+                    selectedCategory = currentSlide
+                }
             }
             .navigationDestination(item: $selectedCategory) { index in
                 DrinksCategoryListView(
@@ -59,9 +123,174 @@ struct BarMenuView: View {
             .toolbar(.hidden, for: .navigationBar)
         }
     }
+
+    // MARK: - Section List
+
+    private func sectionList(geo: GeometryProxy) -> some View {
+        VStack(alignment: .leading, spacing: 0) {
+            Spacer().frame(height: geo.safeAreaInsets.top + geo.size.height * 0.2)
+
+            ScrollViewReader { proxy in
+                ScrollView(.vertical, showsIndicators: false) {
+                    VStack(alignment: .leading, spacing: SP.spacing20) {
+                        ForEach(0..<totalSlides, id: \.self) { index in
+                            Button {
+                                showSections = false
+                                selectedCategory = index
+                            } label: {
+                                Text(slideData[index].title)
+                                    .font(index == currentSlide
+                                          ? .system(size: 22, weight: .medium)
+                                          : .system(size: 15, weight: .regular))
+                                    .foregroundColor(index == currentSlide
+                                                     ? .white
+                                                     : .white.opacity(0.4))
+                            }
+                            .id(index)
+                        }
+                    }
+                    .padding(.leading, SP.horizontalPadding)
+                    .padding(.vertical, SP.spacing8)
+                }
+                .onAppear {
+                    proxy.scrollTo(currentSlide, anchor: .center)
+                }
+            }
+
+            Spacer()
+        }
+        .transition(.opacity.combined(with: .move(edge: .top)))
+    }
+
+    // MARK: - Search Overlay
+
+    private func searchOverlay(geo: GeometryProxy) -> some View {
+        VStack(spacing: 0) {
+            Spacer().frame(height: geo.safeAreaInsets.top + geo.size.height * 0.2)
+
+            HStack(spacing: SP.spacing12) {
+                Image(systemName: "magnifyingglass")
+                    .font(.system(size: 15))
+                    .foregroundColor(.spMuted)
+
+                TextField("Поиск по бару", text: $searchQuery)
+                    .font(.spBody)
+                    .foregroundColor(.spCream)
+                    .autocorrectionDisabled()
+
+                if !searchQuery.isEmpty {
+                    Button {
+                        searchQuery = ""
+                    } label: {
+                        Image(systemName: "xmark.circle.fill")
+                            .font(.system(size: 14))
+                            .foregroundColor(.spMuted)
+                    }
+                }
+            }
+            .padding(.horizontal, SP.spacing16)
+            .padding(.vertical, SP.spacing12)
+            .background(Color.spCard)
+            .clipShape(RoundedRectangle(cornerRadius: SP.radiusSmall))
+            .padding(.horizontal, SP.horizontalPadding)
+
+            if !searchQuery.isEmpty {
+                if searchResults.isEmpty {
+                    VStack {
+                        Spacer()
+                        Text("Ничего не найдено")
+                            .font(.spBody)
+                            .foregroundColor(.spMuted)
+                        Spacer()
+                    }
+                } else {
+                    ScrollView {
+                        LazyVStack(spacing: 0) {
+                            ForEach(searchResults) { item in
+                                HStack {
+                                    Text(item.name)
+                                        .font(.spBody)
+                                        .foregroundColor(.spCream)
+                                    Spacer()
+                                    Text(item.shortPriceDisplay)
+                                        .font(.spPrice)
+                                        .foregroundColor(.spGold)
+                                }
+                                .padding(.horizontal, SP.horizontalPadding)
+                                .padding(.vertical, SP.spacing12)
+
+                                Divider()
+                                    .background(Color.spDivider)
+                                    .padding(.leading, SP.horizontalPadding)
+                            }
+                        }
+                        .padding(.top, SP.spacing8)
+                    }
+                }
+            } else {
+                Spacer()
+            }
+        }
+    }
+
+    // MARK: - Bottom UI
+
+    private var bottomUI: some View {
+        VStack {
+            Spacer()
+
+            VStack(spacing: SP.spacing12) {
+                // "Все разделы" toggle
+                Button {
+                    withAnimation(.spring(response: 0.35, dampingFraction: 0.8)) {
+                        showSections.toggle()
+                        if showSections { showSearch = false; searchQuery = "" }
+                    }
+                } label: {
+                    HStack(spacing: 6) {
+                        Text("Все разделы")
+                            .font(.system(size: 15, weight: .regular))
+                        Image(systemName: showSections ? "chevron.down" : "chevron.right")
+                            .font(.system(size: 11, weight: .medium))
+                    }
+                    .foregroundColor(.white.opacity(0.7))
+                }
+
+                // "Перейти в меню" pill
+                Text("Перейти в меню")
+                    .font(.system(size: 12, weight: .medium))
+                    .tracking(1)
+                    .foregroundColor(.white.opacity(0.85))
+                    .padding(.horizontal, SP.spacing24)
+                    .padding(.vertical, SP.spacing8)
+                    .background(Color.black.opacity(0.4))
+                    .background(.ultraThinMaterial.opacity(0.5))
+                    .clipShape(Capsule())
+
+                // Category name
+                Text(slideData[currentSlide].title)
+                    .font(.spHero)
+                    .tracking(2)
+                    .foregroundColor(.white)
+                    .shadow(color: .black.opacity(0.5), radius: 8, y: 4)
+
+                // Swipe arrows
+                HStack(spacing: SP.spacing24) {
+                    Image(systemName: "chevron.left")
+                        .font(.system(size: 14, weight: .light))
+                        .foregroundColor(.white.opacity(0.4))
+                    Image(systemName: "chevron.right")
+                        .font(.system(size: 14, weight: .light))
+                        .foregroundColor(.white.opacity(0.4))
+                }
+            }
+            .frame(maxWidth: .infinity)
+            .padding(.bottom, 85)
+        }
+    }
 }
 
-// MARK: - Shared Slide Card (full screen, no frame constraint)
+// MARK: - Shared Slide Card
 
 struct SlideCard: View {
     let imageNames: [String]
@@ -76,7 +305,6 @@ struct SlideCard: View {
     var body: some View {
         GeometryReader { geo in
             ZStack {
-                // Rotating background images
                 ForEach(0..<imageNames.count, id: \.self) { index in
                     Image(imageNames[index])
                         .resizable()
@@ -111,15 +339,6 @@ struct SlideCard: View {
                             Image(systemName: "chevron.right")
                                 .font(.system(size: 14, weight: .light))
                                 .foregroundColor(.white.opacity(0.5))
-                        }
-                        .padding(.top, SP.spacing12)
-
-                        HStack(spacing: 4) {
-                            ForEach(0..<totalSlides, id: \.self) { i in
-                                Circle()
-                                    .fill(i == slideIndex ? Color.white : Color.white.opacity(0.3))
-                                    .frame(width: 5, height: 5)
-                            }
                         }
                         .padding(.top, SP.spacing12)
                         .padding(.bottom, 80)
