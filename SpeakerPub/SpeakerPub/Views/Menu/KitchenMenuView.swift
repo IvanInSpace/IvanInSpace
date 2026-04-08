@@ -41,9 +41,14 @@ struct KitchenMenuView: View {
                         showOverlayUI: false
                     )
                     .id(currentSlide)
+                    .blur(radius: (showSections || showSearch) ? 8 : 0)
+                    .animation(.easeInOut(duration: 0.35), value: showSections)
+                    .animation(.easeInOut(duration: 0.35), value: showSearch)
 
                     // Dark overlay
-                    Color.black.opacity(showSearch ? 0.75 : 0.5)
+                    Color.black.opacity((showSections || showSearch) ? 0.7 : 0.5)
+                    .animation(.easeInOut(duration: 0.35), value: showSections)
+                    .animation(.easeInOut(duration: 0.35), value: showSearch)
 
                     // Top controls: sections toggle + search
                     VStack {
@@ -85,7 +90,9 @@ struct KitchenMenuView: View {
             .onTapGesture {
                 if showSections {
                     withAnimation(.easeInOut(duration: 0.25)) { showSections = false }
-                } else if !showSearch {
+                } else if showSearch {
+                    withAnimation(.easeInOut(duration: 0.25)) { showSearch = false; searchQuery = "" }
+                } else {
                     selectedCategory = currentSlide
                 }
             }
