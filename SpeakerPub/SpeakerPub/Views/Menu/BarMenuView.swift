@@ -15,7 +15,7 @@ struct BarMenuView: View {
                                 categories: [MenuData.draughtBeer]
                             )
                         } label: {
-                            BarHeroCard(imageName: "draft", title: "Cask & Keg", size: geo.size)
+                            BarHeroCard(imageNames: ["draft"], title: "Cask & Keg", size: geo.size)
                         }
 
                         NavigationLink {
@@ -24,7 +24,7 @@ struct BarMenuView: View {
                                 categories: cocktailsAndSoftCategories
                             )
                         } label: {
-                            BarHeroCard(imageName: "cocktails", title: "Cocktails & Soft", size: geo.size)
+                            BarHeroCard(imageNames: ["cocktails_1", "cocktails_2", "cocktails_3"], title: "Cocktails & Soft", size: geo.size)
                         }
                     }
                     .scrollTargetLayout()
@@ -43,20 +43,26 @@ struct BarMenuView: View {
     }
 }
 
-// MARK: - Bar Hero Card
+// MARK: - Bar Hero Card (supports rotating backgrounds)
 
 struct BarHeroCard: View {
-    let imageName: String
+    let imageNames: [String]
     let title: String
     let size: CGSize
 
+    @State private var currentImageIndex = 0
+    private let timer = Timer.publish(every: 3, on: .main, in: .common).autoconnect()
+
     var body: some View {
         ZStack {
-            Image(imageName)
-                .resizable()
-                .aspectRatio(contentMode: .fill)
-                .frame(width: size.width, height: size.height)
-                .clipped()
+            ForEach(0..<imageNames.count, id: \.self) { index in
+                Image(imageNames[index])
+                    .resizable()
+                    .aspectRatio(contentMode: .fill)
+                    .frame(width: size.width, height: size.height)
+                    .clipped()
+                    .opacity(index == currentImageIndex ? 1 : 0)
+            }
 
             Color.black.opacity(0.45)
 
@@ -68,7 +74,6 @@ struct BarHeroCard: View {
                     .foregroundColor(.white)
                     .shadow(color: .black.opacity(0.5), radius: 8, y: 4)
 
-                // Swipe arrows
                 HStack(spacing: SP.spacing24) {
                     Image(systemName: "chevron.left")
                         .font(.system(size: 14, weight: .light))
@@ -83,6 +88,12 @@ struct BarHeroCard: View {
             }
         }
         .frame(width: size.width, height: size.height)
+        .onReceive(timer) { _ in
+            guard imageNames.count > 1 else { return }
+            withAnimation(.easeInOut(duration: 0.8)) {
+                currentImageIndex = (currentImageIndex + 1) % imageNames.count
+            }
+        }
     }
 }
 
