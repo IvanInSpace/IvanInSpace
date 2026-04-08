@@ -60,49 +60,52 @@ struct HomeView: View {
         }
     }
 
-    // MARK: - Navigation Icons
+    // MARK: - Navigation Icons (two rows)
 
     private var navIcons: some View {
         VStack(spacing: 20) {
-            // Profile — full width centered
-            Button {
-                showProfile = true
-            } label: {
-                VStack(spacing: 6) {
-                    Image(systemName: "person.circle")
-                        .font(.system(size: 20, weight: .light))
-                    Text("Профиль")
-                        .font(.system(size: 10, weight: .regular))
-                        .tracking(1)
-                }
-                .foregroundColor(.white)
-                .frame(maxWidth: .infinity)
-            }
-
-            // Main nav row
-            HStack(spacing: 0) {
+            // Row 1: Бар, Кухня
+            HStack(spacing: 36) {
                 navButton(icon: "wineglass", label: "Бар", tab: 1)
                 navButton(icon: "fork.knife", label: "Кухня", tab: 2)
+            }
+
+            // Row 2: Профиль, Бронь, О нас
+            HStack(spacing: 36) {
+                Button {
+                    showProfile = true
+                } label: {
+                    iconLabel(icon: "person.circle", label: "Профиль")
+                }
+
+                Button {
+                    UIApplication.shared.open(BarInfo.shared.phoneURL)
+                } label: {
+                    iconLabel(icon: "phone", label: "Бронь")
+                }
+
                 navButton(icon: "info.circle", label: "О нас", tab: 3)
             }
-            .padding(.horizontal, SP.spacing48)
         }
         .padding(.bottom, SP.spacing24)
+    }
+
+    private func iconLabel(icon: String, label: String) -> some View {
+        VStack(spacing: 6) {
+            Image(systemName: icon)
+                .font(.system(size: 20, weight: .light))
+            Text(label)
+                .font(.system(size: 10, weight: .regular))
+                .tracking(1)
+        }
+        .foregroundColor(.white)
     }
 
     private func navButton(icon: String, label: String, tab: Int) -> some View {
         Button {
             selectedTab = tab
         } label: {
-            VStack(spacing: 6) {
-                Image(systemName: icon)
-                    .font(.system(size: 20, weight: .light))
-                Text(label)
-                    .font(.system(size: 10, weight: .regular))
-                    .tracking(1)
-            }
-            .foregroundColor(.white)
-            .frame(maxWidth: .infinity)
+            iconLabel(icon: icon, label: label)
         }
     }
 
