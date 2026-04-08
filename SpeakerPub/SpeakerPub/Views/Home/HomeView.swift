@@ -94,11 +94,13 @@ struct HomeView: View {
         VStack(spacing: 6) {
             Image(systemName: icon)
                 .font(.system(size: 20, weight: .light))
+                .frame(height: 22)
             Text(label)
                 .font(.system(size: 10, weight: .regular))
                 .tracking(1)
         }
         .foregroundColor(.white)
+        .frame(width: 60)
     }
 
     private func navButton(icon: String, label: String, tab: Int) -> some View {
