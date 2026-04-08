@@ -129,10 +129,8 @@ struct KitchenMenuView: View {
                     VStack(alignment: .leading, spacing: SP.spacing20) {
                         ForEach(0..<slides.count, id: \.self) { index in
                             Button {
-                                withAnimation(.easeInOut(duration: 0.3)) {
-                                    currentSlide = index
-                                    showSections = false
-                                }
+                                showSections = false
+                                selectedCategory = index
                             } label: {
                                 Text(slides[index].2)
                                     .font(index == currentSlide
@@ -272,7 +270,7 @@ struct KitchenMenuView: View {
                     .foregroundColor(.white)
                     .shadow(color: .black.opacity(0.5), radius: 8, y: 4)
 
-                // Swipe arrows + dots
+                // Swipe arrows
                 HStack(spacing: SP.spacing24) {
                     Image(systemName: "chevron.left")
                         .font(.system(size: 14, weight: .light))
@@ -280,14 +278,6 @@ struct KitchenMenuView: View {
                     Image(systemName: "chevron.right")
                         .font(.system(size: 14, weight: .light))
                         .foregroundColor(.white.opacity(0.4))
-                }
-
-                HStack(spacing: 4) {
-                    ForEach(0..<slides.count, id: \.self) { i in
-                        Circle()
-                            .fill(i == currentSlide ? Color.white : Color.white.opacity(0.3))
-                            .frame(width: 5, height: 5)
-                    }
                 }
             }
             .frame(maxWidth: .infinity)
