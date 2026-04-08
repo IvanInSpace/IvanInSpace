@@ -42,12 +42,17 @@ struct ProfileView: View {
                 VStack {
                     HStack {
                         Spacer()
-                        CloseButton {
-                            dismiss()
+                        VStack(spacing: 4) {
+                            CloseButton {
+                                dismiss()
+                            }
+                            Text("выйти")
+                                .font(.system(size: 9, weight: .regular))
+                                .foregroundColor(.white.opacity(0.5))
                         }
                         .padding(.trailing, SP.spacing16)
                     }
-                    .padding(.top, geo.safeAreaInsets.top + 8)
+                    .padding(.top, geo.safeAreaInsets.top + 20)
                     Spacer()
                 }
             }
