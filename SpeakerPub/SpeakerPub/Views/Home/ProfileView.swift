@@ -35,24 +35,17 @@ struct ProfileView: View {
                         .lineSpacing(4)
                         .padding(.horizontal, SP.spacing40)
 
-                    Spacer()
-                }
-
-                // Close button — top right, below safe area
-                VStack {
-                    HStack {
-                        Spacer()
-                        VStack(spacing: 4) {
-                            CloseButton {
-                                dismiss()
-                            }
-                            Text("выйти")
-                                .font(.system(size: 9, weight: .regular))
-                                .foregroundColor(.white.opacity(0.5))
+                    // Close button below text
+                    VStack(spacing: 4) {
+                        CloseButton {
+                            dismiss()
                         }
-                        .padding(.trailing, SP.spacing16)
+                        Text("выйти")
+                            .font(.system(size: 9, weight: .regular))
+                            .foregroundColor(.white.opacity(0.5))
                     }
-                    .padding(.top, geo.safeAreaInsets.top + 20)
+                    .padding(.top, SP.spacing16)
+
                     Spacer()
                 }
             }
