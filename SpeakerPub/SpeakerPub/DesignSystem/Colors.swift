@@ -14,8 +14,8 @@ extension Color {
     // Warm cream for primary text
     static let spCream = Color(red: 0.93, green: 0.90, blue: 0.85)             // #EDE6D9
 
-    // Muted text
-    static let spMuted = Color(red: 0.58, green: 0.53, blue: 0.48)             // #94877A
+    // Muted text (WCAG AA Large compliant on spDark)
+    static let spMuted = Color(red: 0.659, green: 0.608, blue: 0.549)            // #A89B8C
 
     // Gold accent — amber warmth
     static let spGold = Color(red: 0.78, green: 0.65, blue: 0.42)              // #C7A66B

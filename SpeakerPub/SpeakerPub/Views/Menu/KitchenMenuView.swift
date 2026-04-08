@@ -1,60 +1,81 @@
 import SwiftUI
 
 // MARK: - Kitchen Menu View
-// Custom circular pager — no TabView
+// 3-column grid of category tiles with photo backgrounds
 
 struct KitchenMenuView: View {
-    @State private var currentSlide = 0
-    @State private var selectedCategory: Int? = nil
+    @State private var selectedCategory: MenuCategory? = nil
 
-    private let slides: [(MenuCategory, [String], String)] = [
-        (MenuData.coldStarters, ["cold_starters_1", "cold_starters_2", "cold_starters_3"], "Холодные закуски"),
-        (MenuData.hotStarters, ["hot_starters_1", "hot_starters_2", "hot_starters_3"], "Горячие закуски"),
-        (MenuData.salads, ["salads_1", "salads_2", "salads_3"], "Салаты"),
-        (MenuData.soups, ["soups_1", "soups_2", "soups_3"], "Супы"),
-        (MenuData.burgerAndMore, ["burgers_1", "burgers_2", "burgers_3"], "Бургеры"),
-        (MenuData.sandwiches, ["sandwiches_1", "sandwiches_2", "sandwiches_3"], "Сэндвичи"),
-        (MenuData.hotDishes, ["hot_dishes_1", "hot_dishes_2", "hot_dishes_3"], "Горячие блюда"),
-        (MenuData.englishPies, ["english_pies_1", "english_pies_2", "english_pies_3"], "Английские пироги"),
-        (MenuData.desserts, ["desserts_1", "desserts_2", "desserts_3"], "Десерты")
+    private let categories: [(MenuCategory, String)] = [
+        (MenuData.coldStarters, "cold_starters_1"),
+        (MenuData.hotStarters, "hot_starters_1"),
+        (MenuData.salads, "salads_1"),
+        (MenuData.soups, "soups_1"),
+        (MenuData.burgerAndMore, "burgers_1"),
+        (MenuData.sandwiches, "sandwiches_1"),
+        (MenuData.hotDishes, "hot_dishes_1"),
+        (MenuData.englishPies, "english_pies_1"),
+        (MenuData.desserts, "desserts_1")
+    ]
+
+    private let columns = [
+        GridItem(.flexible(), spacing: 6),
+        GridItem(.flexible(), spacing: 6),
+        GridItem(.flexible(), spacing: 6)
     ]
 
     var body: some View {
         NavigationStack {
-            ZStack {
-                let (_, images, title) = slides[currentSlide]
-
-                SlideCard(
-                    imageNames: images,
-                    title: title,
-                    totalSlides: slides.count,
-                    slideIndex: currentSlide
-                )
-                .id(currentSlide)
-                .transition(.opacity)
-            }
-            .ignoresSafeArea()
-            .gesture(
-                DragGesture(minimumDistance: 50, coordinateSpace: .local)
-                    .onEnded { value in
-                        guard abs(value.translation.width) > abs(value.translation.height) else { return }
-                        withAnimation(.easeInOut(duration: 0.3)) {
-                            if value.translation.width < 0 {
-                                currentSlide = (currentSlide + 1) % slides.count
-                            } else {
-                                currentSlide = (currentSlide - 1 + slides.count) % slides.count
-                            }
+            ScrollView {
+                LazyVGrid(columns: columns, spacing: 6) {
+                    ForEach(0..<categories.count, id: \.self) { index in
+                        let (category, image) = categories[index]
+                        Button {
+                            selectedCategory = category
+                        } label: {
+                            CategoryTile(name: category.name, imageName: image)
                         }
                     }
-            )
-            .onTapGesture {
-                selectedCategory = currentSlide
+                }
+                .padding(.horizontal, SP.horizontalPadding)
+                .padding(.top, SP.spacing16)
+                .padding(.bottom, 90)
             }
-            .navigationDestination(item: $selectedCategory) { index in
-                KitchenCategoryDetailView(category: slides[index].0)
+            .background(Color.spDark)
+            .navigationTitle("Кухня")
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbarColorScheme(.dark, for: .navigationBar)
+            .navigationDestination(item: $selectedCategory) { category in
+                KitchenCategoryDetailView(category: category)
             }
-            .toolbar(.hidden, for: .navigationBar)
         }
+    }
+}
+
+// MARK: - Category Tile
+
+struct CategoryTile: View {
+    let name: String
+    let imageName: String
+
+    var body: some View {
+        ZStack {
+            Image(imageName)
+                .resizable()
+                .aspectRatio(contentMode: .fill)
+                .frame(minHeight: 110)
+
+            Color.black.opacity(0.4)
+
+            Text(name)
+                .font(.system(size: 12, weight: .medium))
+                .foregroundColor(.white)
+                .multilineTextAlignment(.center)
+                .padding(.horizontal, 4)
+                .shadow(color: .black.opacity(0.6), radius: 4, y: 2)
+        }
+        .aspectRatio(1, contentMode: .fill)
+        .clipShape(RoundedRectangle(cornerRadius: 8))
     }
 }
 
