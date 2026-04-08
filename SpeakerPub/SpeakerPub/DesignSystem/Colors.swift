@@ -8,9 +8,6 @@ extension Color {
     // Primary dark background — deep wood/charcoal
     static let spDark = Color(red: 0.09, green: 0.08, blue: 0.07)              // #171413
 
-    // Slightly lighter surface
-    static let spSurface = Color(red: 0.13, green: 0.11, blue: 0.10)           // #211C1A
-
     // Card background
     static let spCard = Color(red: 0.16, green: 0.14, blue: 0.13)              // #292321
 
@@ -29,6 +26,4 @@ extension Color {
     // Divider/border
     static let spDivider = Color(red: 0.24, green: 0.21, blue: 0.19)           // #3D3630
 
-    // Overlay for images
-    static let spOverlay = Color.black.opacity(0.55)
 }

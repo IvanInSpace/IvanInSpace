@@ -37,7 +37,7 @@ struct BarMenuView: View {
             }
             .background(Color.spDark)
             .ignoresSafeArea()
-            .navigationBarHidden(true)
+            .toolbar(.hidden, for: .navigationBar)
         }
     }
 

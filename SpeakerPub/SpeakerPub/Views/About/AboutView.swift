@@ -100,36 +100,39 @@ struct AboutView: View {
     // MARK: - Expanded Photo Overlay (swipeable)
 
     private var expandedPhotoOverlay: some View {
-        ZStack {
-            Color.black.opacity(0.9)
-                .ignoresSafeArea()
+        GeometryReader { geo in
+            ZStack {
+                Color.black.opacity(0.9)
+                    .ignoresSafeArea()
 
-            if let current = expandedPhoto {
-                Image("atmo\(current)")
-                    .resizable()
-                    .aspectRatio(contentMode: .fit)
-                    .frame(maxWidth: UIScreen.main.bounds.width * 0.9,
-                           maxHeight: UIScreen.main.bounds.height * 0.75)
-                    .clipShape(RoundedRectangle(cornerRadius: 8))
-                    .id(current)
-                    .transition(.opacity)
-                    .gesture(
-                        DragGesture(minimumDistance: 40)
-                            .onEnded { value in
-                                withAnimation(.easeInOut(duration: 0.25)) {
-                                    if value.translation.width < 0 {
-                                        expandedPhoto = current % photoCount + 1
-                                    } else {
-                                        expandedPhoto = (current - 2 + photoCount) % photoCount + 1
+                if let current = expandedPhoto {
+                    Image("atmo\(current)")
+                        .resizable()
+                        .aspectRatio(contentMode: .fit)
+                        .frame(maxWidth: geo.size.width * 0.9,
+                               maxHeight: geo.size.height * 0.75)
+                        .clipShape(RoundedRectangle(cornerRadius: 8))
+                        .id(current)
+                        .transition(.opacity)
+                        .gesture(
+                            DragGesture(minimumDistance: 40)
+                                .onEnded { value in
+                                    withAnimation(.easeInOut(duration: 0.25)) {
+                                        if value.translation.width < 0 {
+                                            expandedPhoto = current % photoCount + 1
+                                        } else {
+                                            expandedPhoto = (current - 2 + photoCount) % photoCount + 1
+                                        }
                                     }
                                 }
-                            }
-                    )
+                        )
+                }
             }
-        }
-        .onTapGesture {
-            withAnimation(.easeInOut(duration: 0.25)) {
-                expandedPhoto = nil
+            .frame(maxWidth: .infinity, maxHeight: .infinity)
+            .onTapGesture {
+                withAnimation(.easeInOut(duration: 0.25)) {
+                    expandedPhoto = nil
+                }
             }
         }
     }

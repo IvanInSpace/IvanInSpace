@@ -83,7 +83,6 @@
 				A10005002 /* DesignSystem */,
 				A10005003 /* Models */,
 				A10005004 /* Views */,
-				A10005008 /* Services */,
 				A10002015 /* Assets.xcassets */,
 				A10002016 /* Preview Content */,
 			);
@@ -147,13 +146,7 @@
 			path = About;
 			sourceTree = "<group>";
 		};
-		A10005008 /* Services */ = {
-			isa = PBXGroup;
-			children = (
-			);
-			path = Services;
-			sourceTree = "<group>";
-		};
+
 		A10005009 /* Components */ = {
 			isa = PBXGroup;
 			children = (
