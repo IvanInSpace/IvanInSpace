@@ -128,6 +128,7 @@ struct KitchenMenuView: View {
                     selectedCategory = currentSlide
                 }
             }
+            .sensoryFeedback(.selection, trigger: selectedCategory)
             .navigationDestination(item: $selectedCategory) { index in
                 KitchenCategoryDetailView(category: slides[index].0)
             }

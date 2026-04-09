@@ -119,6 +119,7 @@ struct HomeView: View {
                 } label: {
                     iconLabel(icon: "person.circle", label: "Профиль")
                 }
+                .sensoryFeedback(.selection, trigger: showProfile)
 
                 Button {
                     UIApplication.shared.open(BarInfo.shared.phoneURL)
@@ -151,6 +152,7 @@ struct HomeView: View {
         } label: {
             iconLabel(icon: icon, label: label)
         }
+        .sensoryFeedback(.selection, trigger: selectedTab)
     }
 
     // MARK: - Events Carousel

@@ -133,6 +133,7 @@ struct BarMenuView: View {
                     selectedCategory = currentSlide
                 }
             }
+            .sensoryFeedback(.selection, trigger: selectedCategory)
             .navigationDestination(item: $selectedCategory) { index in
                 DrinksCategoryListView(
                     title: slideData[index].title,
