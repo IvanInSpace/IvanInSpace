@@ -7,6 +7,7 @@ struct AboutView: View {
     private let info = BarInfo.shared
     private let photoCount = 12
     @State private var expandedPhoto: Int? = nil
+    @State private var copiedField: String? = nil
 
     var body: some View {
         NavigationStack {
@@ -80,12 +81,15 @@ struct AboutView: View {
 
             LazyVGrid(columns: columns, spacing: spacing) {
                 ForEach(1...photoCount, id: \.self) { index in
-                    Image("atmo\(index)")
-                        .resizable()
-                        .aspectRatio(contentMode: .fill)
-                        .frame(minHeight: 100)
-                        .aspectRatio(1, contentMode: .fill)
+                    Color.clear
+                        .aspectRatio(1, contentMode: .fit)
+                        .overlay(
+                            Image("atmo\(index)")
+                                .resizable()
+                                .aspectRatio(contentMode: .fill)
+                        )
                         .clipped()
+                        .clipShape(Rectangle())
                         .onTapGesture {
                             withAnimation(.easeInOut(duration: 0.25)) {
                                 expandedPhoto = index
@@ -147,7 +151,7 @@ struct AboutView: View {
                 .foregroundColor(.spGold)
 
             VStack(spacing: 0) {
-                contactRow(icon: "mappin", title: info.address)
+                copyableContactRow(icon: "mappin", title: info.address, copyText: info.address)
                 separator
                 contactRow(icon: "tram.fill", title: "м. \(info.metro)")
                 separator
@@ -155,7 +159,7 @@ struct AboutView: View {
                 Button {
                     UIApplication.shared.open(info.phoneURL)
                 } label: {
-                    contactRow(icon: "phone", title: info.phone, isLink: true)
+                    copyableContactRow(icon: "phone", title: info.phone, copyText: info.phone, isLink: true)
                 }
                 .buttonStyle(.plain)
 
@@ -164,7 +168,7 @@ struct AboutView: View {
                 Button {
                     UIApplication.shared.open(info.telegram)
                 } label: {
-                    contactRow(icon: "paperplane", title: info.telegramHandle, isLink: true)
+                    copyableContactRow(icon: "paperplane", title: info.telegramHandle, copyText: info.telegramHandle, isLink: true)
                 }
                 .buttonStyle(.plain)
 
@@ -216,6 +220,37 @@ struct AboutView: View {
                 .foregroundColor(isLink ? .spGold : .spCream)
 
             Spacer()
+        }
+        .padding(.vertical, SP.spacing12)
+        .padding(.horizontal, SP.spacing16)
+        .contentShape(Rectangle())
+    }
+
+    private func copyableContactRow(icon: String, title: String, copyText: String, isLink: Bool = false) -> some View {
+        HStack(spacing: SP.spacing12) {
+            Image(systemName: icon)
+                .font(.system(size: 14))
+                .foregroundColor(.spMuted)
+                .frame(width: 20)
+
+            Text(title)
+                .font(.spBody)
+                .foregroundColor(isLink ? .spGold : .spCream)
+
+            Spacer()
+
+            Button {
+                UIPasteboard.general.string = copyText
+                withAnimation { copiedField = copyText }
+                DispatchQueue.main.asyncAfter(deadline: .now() + 1.5) {
+                    withAnimation { copiedField = nil }
+                }
+            } label: {
+                Image(systemName: copiedField == copyText ? "checkmark" : "doc.on.doc")
+                    .font(.system(size: 12))
+                    .foregroundColor(copiedField == copyText ? .spGreen : .spMuted)
+            }
+            .buttonStyle(.plain)
         }
         .padding(.vertical, SP.spacing12)
         .padding(.horizontal, SP.spacing16)
